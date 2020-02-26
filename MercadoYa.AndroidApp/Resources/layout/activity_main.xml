@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:minWidth="25px"
+    android:minHeight="25px"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/drawerLayout">
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+
+        <!--        <android.support.design.widget.NavigationView
+        android:id="@+id/navView"
+        android:layout_height="match_parent"
+        android:layout_width="300dp"
+        android:background="@color/mercadoYaWhite"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/nav_header"
+        app:menu="@menu/nav_menu_main"/>-->
+
+        <AutoCompleteTextView 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtSearch"
+            android:gravity="top"
+            android:textAlignment="center"
+            android:hint="¿Qué vas a comer?"
+            android:inputType="text"
+    />
+        <include
+            layout="@layout/content_main" />
+
+    </LinearLayout>
+
+
+
+</android.support.v4.widget.DrawerLayout>

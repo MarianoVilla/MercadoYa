@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "143470339980",
+    "firebase_url": "https://mercadoya-22303.firebaseio.com",
+    "project_id": "mercadoya-22303",
+    "storage_bucket": "mercadoya-22303.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:143470339980:android:82c55ba6091a2765b658a9",
+        "android_client_info": {
+          "package_name": "com.companyname.mercadoya.androidapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "143470339980-qasm1p9fn015pc50lmrnt67k6e8efqpb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.companyname.mercadoya.androidapp",
+            "certificate_hash": "a0bc2a59f2bb9d05de5edb52de2b43a31c657d1a"
+          }
+        },
+        {
+          "client_id": "143470339980-ce1ic7njinch057rin37c34tttgh4dad.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIDWdnKX9etAxnBehwhh3pdq7S1LqFioQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "143470339980-ce1ic7njinch057rin37c34tttgh4dad.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

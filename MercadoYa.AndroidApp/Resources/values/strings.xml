@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">MercadoYa</string>
+    <string name="action_settings">Settings</string>
+  <string name="click_login">¿Ya tenés cuenta? Iniciá sesión.</string>
+  <string name="click_register">¿No tenés cuenta? Registrate.</string>
+  <string name="maps_key">AIzaSyAbpvYjBolMkpYs10dnlA10u_D6WmMbnqY</string>
+</resources>

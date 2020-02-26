@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Refractored.Controls.CircleImageView
+        android:id="@+id/accountImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+    android:layout_gravity="center"
+        android:src="@drawable/ugly"
+        android:scaleType="centerCrop"
+    />
+
+    <TextView
+        android:id="@+id/txtAcountTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+    android:gravity="center"
+    android:layout_gravity="bottom"
+        android:text="Usuario"
+    android:layout_marginBottom="12dp"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+    android:layout_gravity="bottom"
+    android:background="@color/mercadoYaAsh"
+    />
+
+</FrameLayout>

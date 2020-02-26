@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#2c3e50</color>
+    <color name="colorPrimaryDark">#1B3147</color>
+    <color name="colorAccent">#3498db</color>
+    <color name="splashBackground">#fff</color>
+  <color name="mercadoYaPrimary">#1c4258</color>
+  <color name="mercadoYaAccent">#ee861f</color>
+  <color name="mercadoYaPrimaryDark">#102a38</color>
+  <color name="mercadoYaWhite">#fff</color>
+  <color name="mercadoYaAsh">#e2e2e2</color>
+</resources>
