@@ -48,7 +48,7 @@ namespace MercadoYa.Rest.Controllers
             return BadRequest(InvalidUserMessage);
 
         }
-        //TODO: replace authentication with password hash.
+        //TODO: hash auth.
         [HttpPost]
         [Route("users/signin")]
         public IActionResult SignIn([FromBody] UserCredentials Credentials)
