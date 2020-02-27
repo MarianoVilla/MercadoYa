@@ -1,5 +1,6 @@
 ﻿using MercadoYa.Interfaces;
 using MercadoYa.Model.Concrete;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -10,10 +11,13 @@ namespace MercadoYa.Rest.Logic
 {
     public class HashUtil : IMyPasswordHasher
     {
-        IPasswordHasher<HashUtil> Hasher;
+        private readonly PasswordHasherCompatibilityMode _compatibilityMode;
+        private readonly int _iterCount;
+        private readonly RandomNumberGenerator _rng;
+        IPasswordHasher<object> Hasher;
         public HashUtil()
         {
-            this.Hasher = new PasswordHasher<HashUtil>();
+            this.Hasher = new PasswordHasher<object>();
         }
         public string GenerateSalt(int ByteLength = 16)
         {
@@ -25,26 +29,26 @@ namespace MercadoYa.Rest.Logic
         }
         public bool CheckPassword(string HashedPassword, string UnhashedPassword)
         {
-            return Hasher.VerifyHashedPassword(this, HashedPassword, UnhashedPassword) == PasswordVerificationResult.Success;
+            return Hasher.VerifyHashedPassword(null, HashedPassword, UnhashedPassword) == PasswordVerificationResult.Success;
         }
         public IUserCredentials GenerateCredentials(string Email, string Username, string Password)
         {
-            string Salt = GenerateSalt();
-            string SaltedPassword = Password + Salt;
-            string HashedPassword = HashPassword(SaltedPassword);
+            //string Salt = GenerateSalt();
+            //string SaltedPassword = Password + Salt;
+            string HashedPassword = HashPassword(Password);
             return new UserCredentials()
             {
                 Email = Email,
                 Username = Username,
                 Password = HashedPassword,
-                PasswordSalt = Salt,
+                //PasswordSalt = Salt,
                 HashAlgorithm = HashAlgorithmName.SHA256.Name
             };
         }
 
         public string HashPassword(string Password)
         {
-            return Hasher.HashPassword(this, Password);
+            return Hasher.HashPassword(null, Password);
         }
     }
 }

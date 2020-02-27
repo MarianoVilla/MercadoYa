@@ -11,15 +11,22 @@ namespace MercadoYa.Test
     public class HashUtilTest
     {
         [Test]
-        public void TestHashAndCheck()
+        public void TestHashAndCheck_ShouldAuth()
         {
             var Hasher = new HashUtil();
             string TestPassword = "Abc123456";
-            string SaltedPassword = TestPassword + Hasher.GenerateSalt();
-            string Hashed = Hasher.HashPassword(SaltedPassword);
+            string Hashed = Hasher.HashPassword(TestPassword);
 
-            Assert.True(Hasher.CheckPassword(TestPassword, Hashed));
+            Assert.True(Hasher.CheckPassword(Hashed, TestPassword));
+        }
+        [Test]
+        public void TestHashAndCheck_ShouldReject()
+        {
+            var Hasher = new HashUtil();
+            string TestPassword = "Abc123456";
+            string Hashed = Hasher.HashPassword(TestPassword);
 
+            Assert.False(Hasher.CheckPassword(Hashed, "SomeInvalidPass"));
         }
     }
 }
