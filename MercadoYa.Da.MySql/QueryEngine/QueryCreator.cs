@@ -7,29 +7,33 @@ namespace MercadoYa.Da.MySql.QueryEngine
 {
     public class QueryCreator
     {
+        static readonly string StoreUsers = "store_users";
+        static readonly string ClientUsers = "client_users";
+        static readonly string UserCredentials = "user_credentials";
+
         public static string SelectStoreUser(string Uid = null)
         {
             if(Uid is null)
             {
-                return SelectFrom("storeusers");
+                return SelectFrom(StoreUsers);
             }
-            return $"{SelectFrom("storeusers")} WHERE Uid = @Uid";
+            return $"{SelectFrom(StoreUsers)} WHERE Uid = @Uid";
         }
         public static string SelectClientUser(string Uid = null)
         {
             if(Uid is null)
             {
-                return SelectFrom("clientusers");
+                return SelectFrom(ClientUsers);
             }
-            return $"{SelectFrom("clientusers")} WHERE Uid = @Uid";
+            return $"{SelectFrom(ClientUsers)} WHERE Uid = @Uid";
         }
         public static string SelectFrom(string Table)
         {
             return $"SELECT * FROM {Table}";
         }
-        public static string SelectUserCredentials(string Email, string Password)
+        public static string SelectUserCredentials(string Email)
         {
-            return $"{SelectFrom("usercredentials")} WHERE Email = @Email AND Password = @Password";
+            return $"{SelectFrom(UserCredentials)} WHERE Email = @Email";
         }
     }
 }

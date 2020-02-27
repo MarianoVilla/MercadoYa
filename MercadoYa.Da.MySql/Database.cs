@@ -10,6 +10,7 @@ using MercadoYa.Model.Concrete;
 using System.Linq;
 using MercadoYa.Lib.Util;
 
+
 namespace MercadoYa.Da.MySql
 {
     public class Database : IDatabase
@@ -20,14 +21,18 @@ namespace MercadoYa.Da.MySql
             this.ConnectionString = ConnectionString;
         }
 
-        public string AddStoreUser(IAppUser User) => AddUser(User, Const.SpInsertStoreUser);
-        public string AddClientUser(IAppUser User) => AddUser(User, Const.SpInsertClientUser);
+        public string AddStoreUser(IAppUser User, IUserCredentials Credentials) => AddUser(User, Credentials, Const.SpInsertStoreUser);
+        public string AddClientUser(IAppUser User, IUserCredentials Credentials) => AddUser(User, Credentials, Const.SpInsertClientUser);
 
-        string AddUser(IAppUser User, string Stored)
+        string AddUser(IAppUser User, IUserCredentials Credentials, string Stored)
         {
             using IDbConnection conn = new MySqlConnection(ConnectionString);
-            DynamicParameters Parameters = ReflectParameters(User);
+
+            var Parameters = new DynamicParameters();
+            Parameters.AddByReflection(User);
+            Parameters.AddByReflection(Credentials);
             Parameters.Add("Uid", dbType: DbType.String, direction: ParameterDirection.Output);
+
             var Result = conn.Execute(Stored, Parameters, commandType: CommandType.StoredProcedure);
             return Parameters.Get<string>("Uid");
         }
@@ -41,31 +46,19 @@ namespace MercadoYa.Da.MySql
             return conn.Query<IAppUser>(Query, new { Uid }).FirstOrDefault();
         }
 
-        public IUserCredentials GetUserCredentials(string Email, string Password)
+        public IUserCredentials GetUserCredentials(string Email)
         {
-            if (StringUtil.AnyNullOfWhiteSpace(Email, Password))
-                throw new ArgumentException("Email or password were empty.");
+            if (string.IsNullOrWhiteSpace(Email))
+                throw new ArgumentException("Email was empty.");
 
-            var Parameters = new DynamicParameters();
-            Parameters.Add(nameof(Email), Email);
-            Parameters.Add(nameof(Password), Password);
+            string Query = QueryCreator.SelectUserCredentials(Email);
 
             using IDbConnection conn = new MySqlConnection(ConnectionString);
-            return conn.Query<UserCredentials>(QueryCreator.SelectUserCredentials(Email, Password), Parameters).FirstOrDefault();
+            var Result = conn.Query<UserCredentials>(Query, new { Email });
+            return Result.FirstOrDefault();
         }
 
 
-        #region Helpers.
-        DynamicParameters ReflectParameters(object Entity)
-        {
-            var Parameters = new DynamicParameters();
-            foreach (var p in Entity.GetType().GetProperties())
-            {
-                Parameters.Add(p.Name, p.GetValue(Entity));
-            }
-            return Parameters;
-        }
-        #endregion
 
 
     }

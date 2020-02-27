@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MercadoYa.Da.MySql;
 using MercadoYa.Interfaces;
 using MercadoYa.Lib.Util;
+using MercadoYa.Rest.Logic;
 using MercadoYa.Rest.Mock;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -36,7 +37,8 @@ namespace MercadoYa.Rest
 
             services.Add(new ServiceDescriptor(typeof(IDatabase), new Database(Conn)));
             services.Add(new ServiceDescriptor(typeof(IValidator), new Validator()));
-            services.Add(new ServiceDescriptor(typeof(IAuth), new MockAuth(new Database(Conn))));
+            services.Add(new ServiceDescriptor(typeof(IAuth), new MockAuth(new Database(Conn), new HashUtil())));
+            services.Add(new ServiceDescriptor(typeof(IMyPasswordHasher), new HashUtil()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

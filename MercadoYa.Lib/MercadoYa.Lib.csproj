@@ -2,10 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <ProjectGuid>{BCB77C94-F839-4287-B214-FF49E801A59B}</ProjectGuid>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="NuGet.CommandLine" Version="5.4.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\MercadoYa.Interfaces\MercadoYa.Interfaces.csproj" />
+    <ProjectReference Include="..\MercadoYa.Model\MercadoYa.Model.csproj" />
   </ItemGroup>
 
 

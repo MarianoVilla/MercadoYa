@@ -6,7 +6,7 @@ namespace MercadoYa.Interfaces
 {
     public interface IAppUser
     {
-        string UserName { get; set; }
+        string Username { get; set; }
         string Email { get; set; }
         string Password { get; set; }
         string Phone { get; set; }

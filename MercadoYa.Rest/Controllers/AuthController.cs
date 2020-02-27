@@ -17,13 +17,15 @@ namespace MercadoYa.Rest.Controllers
         readonly IValidator Validator;
         readonly IDatabase Database;
         readonly IAuth Auth;
+        readonly IMyPasswordHasher Hasher;
         string InvalidUserMessage = "Invalid email and/or password.";
 
-        public AuthController(IValidator Validator, IDatabase Database, IAuth Auth)
+        public AuthController(IValidator Validator, IDatabase Database, IAuth Auth, IMyPasswordHasher Hasher)
         {
             this.Validator = Validator;
             this.Database = Database;
             this.Auth = Auth;
+            this.Hasher = Hasher;
         }
         [HttpPost]
         [Route("users/addstore")]
@@ -31,7 +33,8 @@ namespace MercadoYa.Rest.Controllers
         {
             if (ValidUser(User))
             {
-                User.Uid = Database.AddStoreUser(User);
+                var Credentials = (UserCredentials)Hasher.GenerateCredentials(User.Email, User.Username, User.Password);
+                User.Uid = Database.AddStoreUser(User, Credentials);
                 return new JsonResult(User);
             }
             return BadRequest(InvalidUserMessage);
@@ -42,7 +45,8 @@ namespace MercadoYa.Rest.Controllers
         {
             if (ValidUser(User))
             {
-                User.Uid = Database.AddClientUser(User);
+                var Credentials = (UserCredentials)Hasher.GenerateCredentials(User.Email, User.Username, User.Password);
+                User.Uid = Database.AddClientUser(User, Credentials);
                 return new JsonResult(User);
             }
             return BadRequest(InvalidUserMessage);

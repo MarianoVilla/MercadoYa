@@ -18,7 +18,7 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
 {
     public class UserUtil
     {
-        static IValidator Validator;
+        static readonly IValidator Validator = new Validator();
         public static ISharedPreferences GetUserInfo(FileCreationMode CreationMode = FileCreationMode.Private)
         {
             return Application.Context.GetSharedPreferences("userinfo", CreationMode);
@@ -68,7 +68,7 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
             var Email = Editor.GetString(nameof(AppUser.Email), null);
             var Password = Editor.GetString(nameof(AppUser.Password), null);
             var Phone = Editor.GetString(nameof(AppUser.Phone), null);
-            var Name = Editor.GetString(nameof(AppUser.UserName), null);
+            var Name = Editor.GetString(nameof(AppUser.Username), null);
 
             List<string> DecryptedUser = CryptoUtil.TryDecryptStrings(Key: Key, DefaultTo: "", Email, Password, Phone, Name);
 
@@ -77,7 +77,7 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
                 Email = DecryptedUser[0],
                 Password = DecryptedUser[1],
                 Phone = DecryptedUser[2],
-                UserName = DecryptedUser[3]
+                Username = DecryptedUser[3]
             };
         }
         public static bool IsValidUser(string Email, string Password, string Phone = null, string Name = null)
@@ -96,7 +96,7 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
         }
         public static bool IsValidUser(IAppUser User)
         {
-            return IsValidUser(User.Email, User.Password, User.Phone, User.UserName);
+            return IsValidUser(User.Email, User.Password, User.Phone, User.Username);
         }
         public static Java.Util.HashMap HashUser(string Email, string Phone, string Name)
         {
