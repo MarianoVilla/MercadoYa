@@ -6,6 +6,6 @@ namespace MercadoYa.Interfaces
 {
     public interface IAuth
     {
-        bool AuthUser(string Email, string Password);
+        object AuthUser(string Email, string Password);
     }
 }

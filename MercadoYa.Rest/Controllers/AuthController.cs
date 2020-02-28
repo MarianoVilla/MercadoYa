@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MercadoYa.Interfaces;
+using MercadoYa.Lib.Util;
 using MercadoYa.Model.Concrete;
 using MercadoYa.Rest.Logic;
+using MercadoYa.Rest.Mock;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,11 +31,11 @@ namespace MercadoYa.Rest.Controllers
         }
         [HttpPost]
         [Route("users/addstore")]
-        public IActionResult AddStoreUser([FromBody] StoreUser User)
+        public IActionResult AddStoreUser([FromBody] string Email, [FromBody] string Username, [FromBody] string Password, [FromBody] ClientUser User)
         {
-            if (ValidUser(User))
+            if (ValidEmailPassword(Email, Password))
             {
-                var Credentials = (UserCredentials)Hasher.GenerateCredentials(User.Email, User.Username, User.Password);
+                var Credentials = (UserCredentials)Hasher.SecureCredentials(Email, Username, Password);
                 User.Uid = Database.AddStoreUser(User, Credentials);
                 return new JsonResult(User);
             }
@@ -41,31 +43,28 @@ namespace MercadoYa.Rest.Controllers
         }
         [HttpPost]
         [Route("users/addclient")]
-        public IActionResult AddClientUser([FromBody] ClientUser User)
+        public IActionResult AddClientUser([FromBody] string Email, [FromBody] string Username, [FromBody] string Password, [FromBody] ClientUser User)
         {
-            if (ValidUser(User))
+            if (ValidEmailPassword(Email, Password))
             {
-                var Credentials = (UserCredentials)Hasher.GenerateCredentials(User.Email, User.Username, User.Password);
+                var Credentials = (UserCredentials)Hasher.SecureCredentials(Email, Username, Password);
                 User.Uid = Database.AddClientUser(User, Credentials);
                 return new JsonResult(User);
             }
             return BadRequest(InvalidUserMessage);
 
         }
-        //TODO: hash auth.
         [HttpPost]
         [Route("users/signin")]
         public IActionResult SignIn([FromBody] UserCredentials Credentials)
         {
-            if(Auth.AuthUser(Credentials.Email, Credentials.Password))
+            var Uid = Auth.AuthUser(Credentials.Email, Credentials.Password) as string;
+            if (Uid is null)
             {
-                return Ok();
+                return Unauthorized();
             }
-            return Unauthorized();
-        }
-        bool ValidUser(IAppUser User)
-        {
-            return ValidEmailPassword(User.Email, User.Password);
+            Response.Cookies.Append("timestamp", CryptoUtil.EncryptString(Const.CryptoDevKey, DateTime.Now.ToString("yyyyMMddHHmmssFFF")));
+            return new JsonResult(new { Uid });
         }
         bool ValidEmailPassword(string Email, string Password)
         {

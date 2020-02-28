@@ -11,9 +11,6 @@ namespace MercadoYa.Rest.Logic
 {
     public class HashUtil : IMyPasswordHasher
     {
-        private readonly PasswordHasherCompatibilityMode _compatibilityMode;
-        private readonly int _iterCount;
-        private readonly RandomNumberGenerator _rng;
         IPasswordHasher<object> Hasher;
         public HashUtil()
         {
@@ -31,17 +28,15 @@ namespace MercadoYa.Rest.Logic
         {
             return Hasher.VerifyHashedPassword(null, HashedPassword, UnhashedPassword) == PasswordVerificationResult.Success;
         }
-        public IUserCredentials GenerateCredentials(string Email, string Username, string Password)
+        public IUserCredentials SecureCredentials(string Email, string Username, string Password)
         {
-            //string Salt = GenerateSalt();
-            //string SaltedPassword = Password + Salt;
             string HashedPassword = HashPassword(Password);
             return new UserCredentials()
             {
                 Email = Email,
                 Username = Username,
                 Password = HashedPassword,
-                //PasswordSalt = Salt,
+                PasswordSalt = string.Empty,
                 HashAlgorithm = HashAlgorithmName.SHA256.Name
             };
         }

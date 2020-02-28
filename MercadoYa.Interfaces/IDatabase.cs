@@ -10,6 +10,8 @@ namespace MercadoYa.Interfaces
         string AddClientUser(IAppUser User, IUserCredentials Credentials);
         IAppUser GetStoreUser(string Uid);
         IAppUser GetClientUser(string Uid);
+        IAppUser GetUser(string Uid);
+        IAppUser GetUserByEmail(string Email);
         IUserCredentials GetUserCredentials(string Email);
 
     }

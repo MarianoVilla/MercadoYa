@@ -37,13 +37,20 @@ namespace MercadoYa.Da.MySql
             return Parameters.Get<string>("Uid");
         }
 
-        public IAppUser GetClientUser(string Uid) => GetUser(Uid, QueryCreator.SelectClientUser(Uid));
-        public IAppUser GetStoreUser(string Uid) => GetUser(Uid, QueryCreator.SelectStoreUser(Uid));
+        public IAppUser GetClientUser(string Uid) => InnerGetUser(Uid, QueryCreator.SelectClientUser(Uid));
+        public IAppUser GetStoreUser(string Uid) => InnerGetUser(Uid, QueryCreator.SelectStoreUser(Uid));
+        public IAppUser GetUser(string Uid) => InnerGetUser(Uid, QueryCreator.SelectUser(Uid));
 
-        IAppUser GetUser(string Uid, string Query)
+        IAppUser InnerGetUser(string Uid, string Query)
         {
             using IDbConnection conn = new MySqlConnection(ConnectionString);
-            return conn.Query<IAppUser>(Query, new { Uid }).FirstOrDefault();
+            return conn.Query<AppUser>(Query, new {  Uid }).FirstOrDefault();
+        }
+
+        public IAppUser GetUserByEmail(string Email)
+        {
+            using IDbConnection conn = new MySqlConnection(ConnectionString);
+            return conn.Query<AppUser>(QueryCreator.SelectUserByEmail(Email), new { Email }).FirstOrDefault();
         }
 
         public IUserCredentials GetUserCredentials(string Email)
@@ -57,9 +64,5 @@ namespace MercadoYa.Da.MySql
             var Result = conn.Query<UserCredentials>(Query, new { Email });
             return Result.FirstOrDefault();
         }
-
-
-
-
     }
 }

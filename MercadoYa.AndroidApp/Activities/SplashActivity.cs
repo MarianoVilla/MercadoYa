@@ -19,7 +19,7 @@ namespace MercadoYa.AndroidApp.Activities
     [Activity(Label = "@string/app_name", Theme = "@style/MercadoYa.Splash", MainLauncher = true, NoHistory = true, ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait)]
     public class SplashActivity : AppCompatActivity
     {
-        AppUser User;
+        MobileAppUser User;
         string Key;
         protected override void OnCreate(Bundle savedInstanceState)
         {

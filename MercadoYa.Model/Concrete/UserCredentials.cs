@@ -12,5 +12,6 @@ namespace MercadoYa.Model.Concrete
         public string Username { get; set; }
         public string PasswordSalt { get; set; }
         public string HashAlgorithm { get; set; }
+        public string UserUid { get; set; }
     }
 }

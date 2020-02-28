@@ -37,7 +37,7 @@ namespace MercadoYa.Rest
 
             services.Add(new ServiceDescriptor(typeof(IDatabase), new Database(Conn)));
             services.Add(new ServiceDescriptor(typeof(IValidator), new Validator()));
-            services.Add(new ServiceDescriptor(typeof(IAuth), new MockAuth(new Database(Conn), new HashUtil())));
+            services.Add(new ServiceDescriptor(typeof(IAuth), new MyAuth(new Database(Conn), new HashUtil())));
             services.Add(new ServiceDescriptor(typeof(IMyPasswordHasher), new HashUtil()));
         }
 

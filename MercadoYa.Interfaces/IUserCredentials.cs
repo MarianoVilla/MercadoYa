@@ -11,5 +11,6 @@ namespace MercadoYa.Interfaces
         string Password { get; set; }
         string PasswordSalt { get; set; }
         string HashAlgorithm { get; set; }
+        string UserUid { get; set; }
     }
 }

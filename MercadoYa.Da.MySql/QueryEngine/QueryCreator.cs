@@ -7,6 +7,7 @@ namespace MercadoYa.Da.MySql.QueryEngine
 {
     public class QueryCreator
     {
+        static readonly string Users = "users";
         static readonly string StoreUsers = "store_users";
         static readonly string ClientUsers = "client_users";
         static readonly string UserCredentials = "user_credentials";
@@ -34,6 +35,18 @@ namespace MercadoYa.Da.MySql.QueryEngine
         public static string SelectUserCredentials(string Email)
         {
             return $"{SelectFrom(UserCredentials)} WHERE Email = @Email";
+        }
+        public static string SelectUserByEmail(string Email)
+        {
+            return $"{SelectFrom(Users)} WHERE Email = @Email";
+        }
+        public static string SelectUser(string Uid)
+        {
+            if (Uid is null)
+            {
+                return SelectFrom(Users);
+            }
+            return $"{SelectFrom(Users)} WHERE Uid = @Uid";
         }
     }
 }

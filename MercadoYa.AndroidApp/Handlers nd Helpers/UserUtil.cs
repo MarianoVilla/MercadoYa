@@ -61,18 +61,18 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
             Editor.Clear();
             Editor.Apply();
         }
-        public static AppUser GetUserFromPreferences(string Key)
+        public static MobileAppUser GetUserFromPreferences(string Key)
         {
             ISharedPreferences Editor = GetUserInfo();
 
-            var Email = Editor.GetString(nameof(AppUser.Email), null);
-            var Password = Editor.GetString(nameof(AppUser.Password), null);
-            var Phone = Editor.GetString(nameof(AppUser.Phone), null);
-            var Name = Editor.GetString(nameof(AppUser.Username), null);
+            var Email = Editor.GetString(nameof(MobileAppUser.Email), null);
+            var Password = Editor.GetString(nameof(MobileAppUser.Password), null);
+            var Phone = Editor.GetString(nameof(MobileAppUser.Phone), null);
+            var Name = Editor.GetString(nameof(MobileAppUser.Username), null);
 
             List<string> DecryptedUser = CryptoUtil.TryDecryptStrings(Key: Key, DefaultTo: "", Email, Password, Phone, Name);
 
-            return new AppUser()
+            return new MobileAppUser()
             {
                 Email = DecryptedUser[0],
                 Password = DecryptedUser[1],
@@ -89,12 +89,12 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
         {
             string ValidationMessage = string.Empty;
             ValidationMessage += Validator.ValidateEmail(Email);
-            //ValidationMessage += Validator.ValidatePassword(Password);
+            ValidationMessage += Validator.ValidatePassword(Password);
             ValidationMessage += Phone == null ? string.Empty : Validator.ValidatePhone(Phone);
             ValidationMessage += Name == null ? string.Empty : Validator.ValidateName(Name);
             return ValidationMessage;
         }
-        public static bool IsValidUser(IAppUser User)
+        public static bool IsValidUser(IMobileAppUser User)
         {
             return IsValidUser(User.Email, User.Password, User.Phone, User.Username);
         }
