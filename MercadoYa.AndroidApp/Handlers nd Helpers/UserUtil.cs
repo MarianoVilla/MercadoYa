@@ -61,18 +61,18 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
             Editor.Clear();
             Editor.Apply();
         }
-        public static MobileAppUser GetUserFromPreferences(string Key)
+        public static FullAppUser GetUserFromPreferences(string Key)
         {
             ISharedPreferences Editor = GetUserInfo();
 
-            var Email = Editor.GetString(nameof(MobileAppUser.Email), null);
-            var Password = Editor.GetString(nameof(MobileAppUser.Password), null);
-            var Phone = Editor.GetString(nameof(MobileAppUser.Phone), null);
-            var Name = Editor.GetString(nameof(MobileAppUser.Username), null);
+            var Email = Editor.GetString(nameof(FullAppUser.Email), null);
+            var Password = Editor.GetString(nameof(FullAppUser.Password), null);
+            var Phone = Editor.GetString(nameof(FullAppUser.Phone), null);
+            var Name = Editor.GetString(nameof(FullAppUser.Username), null);
 
             List<string> DecryptedUser = CryptoUtil.TryDecryptStrings(Key: Key, DefaultTo: "", Email, Password, Phone, Name);
 
-            return new MobileAppUser()
+            return new FullAppUser()
             {
                 Email = DecryptedUser[0],
                 Password = DecryptedUser[1],
@@ -94,7 +94,7 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
             ValidationMessage += Name == null ? string.Empty : Validator.ValidateName(Name);
             return ValidationMessage;
         }
-        public static bool IsValidUser(IMobileAppUser User)
+        public static bool IsValidUser(IFullAppUser User)
         {
             return IsValidUser(User.Email, User.Password, User.Phone, User.Username);
         }

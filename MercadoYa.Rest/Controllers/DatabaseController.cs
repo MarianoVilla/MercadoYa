@@ -23,7 +23,11 @@ namespace MercadoYa.Rest.Controllers
             this.Logger = logger;
             this.Database = Database;
         }
-
+        [Route("test")]
+        public IActionResult Test() 
+        { 
+            return Ok(); 
+        }
         [Route("users")]
         public IActionResult GetUserInfo([FromBody] string Uid)
         {

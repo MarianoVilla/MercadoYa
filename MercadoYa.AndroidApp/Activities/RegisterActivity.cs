@@ -85,9 +85,9 @@ namespace MercadoYa.AndroidApp.Activities
         {
             TaskCompletionListener.Success += TaskCompletionListener_Success;
             TaskCompletionListener.Failure += TaskCompletionListener_Failure;
-            Auth.CreateUserWithEmailAndPassword(Email, Password)
-                .AddOnSuccessListener(this, TaskCompletionListener)
-                .AddOnFailureListener(this, TaskCompletionListener);
+            //Auth.CreateUserWithEmailAndPassword(Email, Password)
+            //    .AddOnSuccessListener(this, TaskCompletionListener)
+            //    .AddOnFailureListener(this, TaskCompletionListener);
         }
 
         private void TaskCompletionListener_Failure(object sender, EventArgs e)

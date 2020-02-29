@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -11,16 +12,25 @@ using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
 using MercadoYa.AndroidApp.Handlers_nd_Helpers;
+using MercadoYa.Interfaces;
 using MercadoYa.Lib.Util;
 using MercadoYa.Model.Concrete;
+using TinyIoC;
 
 namespace MercadoYa.AndroidApp.Activities
 {
     [Activity(Label = "@string/app_name", Theme = "@style/MercadoYa.Splash", MainLauncher = true, NoHistory = true, ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait)]
     public class SplashActivity : AppCompatActivity
     {
-        MobileAppUser User;
+        FullAppUser User;
         string Key;
+
+        IObservableClientAuthenticator Authenticator;
+        public SplashActivity()
+        {
+            Authenticator = App.DIContainer.Resolve<IObservableClientAuthenticator>();
+        }
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -34,9 +44,12 @@ namespace MercadoYa.AndroidApp.Activities
                 var TaskCompletionListener = new TaskCompletionListener();
                 TaskCompletionListener.Success += TaskCompletionListener_Success;
                 TaskCompletionListener.Failure += TaskCompletionListener_Failure;
-                FirebaseHandler.GetFirebaseAuth().SignInWithEmailAndPassword(User.Email, User.Password)
-                    .AddOnSuccessListener(this, TaskCompletionListener)
-                    .AddOnFailureListener(this, TaskCompletionListener);
+                Authenticator.SignInWithEmailAndPasswordAsync(User.Email, User.Password);
+                Authenticator.AddOnFailureListener(TaskCompletionListener);
+                Authenticator.AddOnSuccessListener(TaskCompletionListener);
+                //FirebaseHandler.GetFirebaseAuth().SignInWithEmailAndPassword(User.Email, User.Password)
+                //    .AddOnSuccessListener(this, TaskCompletionListener)
+                //    .AddOnFailureListener(this, TaskCompletionListener);
             }
             else
             {

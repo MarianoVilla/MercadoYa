@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MercadoYa.Rest.Mock
 {
-    public class MyAuth : IAuth
+    public class MyAuth : IAuthenticator
     {
         readonly IDatabase Database;
         readonly IMyPasswordHasher Hasher;

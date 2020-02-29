@@ -7,6 +7,7 @@ using MercadoYa.Lib.Util;
 using MercadoYa.Model.Concrete;
 using MercadoYa.Rest.Logic;
 using MercadoYa.Rest.Mock;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,11 +19,11 @@ namespace MercadoYa.Rest.Controllers
     {
         readonly IValidator Validator;
         readonly IDatabase Database;
-        readonly IAuth Auth;
+        readonly IAuthenticator Auth;
         readonly IMyPasswordHasher Hasher;
         string InvalidUserMessage = "Invalid email and/or password.";
 
-        public AuthController(IValidator Validator, IDatabase Database, IAuth Auth, IMyPasswordHasher Hasher)
+        public AuthController(IValidator Validator, IDatabase Database, IAuthenticator Auth, IMyPasswordHasher Hasher)
         {
             this.Validator = Validator;
             this.Database = Database;
@@ -31,11 +32,11 @@ namespace MercadoYa.Rest.Controllers
         }
         [HttpPost]
         [Route("users/addstore")]
-        public IActionResult AddStoreUser([FromBody] string Email, [FromBody] string Username, [FromBody] string Password, [FromBody] ClientUser User)
+        public IActionResult AddStoreUser([FromBody] FullStoreUser User)
         {
-            if (ValidEmailPassword(Email, Password))
+            if (ValidEmailPassword(User.Email, User.Password))
             {
-                var Credentials = (UserCredentials)Hasher.SecureCredentials(Email, Username, Password);
+                var Credentials = (UserCredentials)Hasher.SecureCredentials(User.Email, User.Username, User.Password);
                 User.Uid = Database.AddStoreUser(User, Credentials);
                 return new JsonResult(User);
             }
@@ -43,11 +44,11 @@ namespace MercadoYa.Rest.Controllers
         }
         [HttpPost]
         [Route("users/addclient")]
-        public IActionResult AddClientUser([FromBody] string Email, [FromBody] string Username, [FromBody] string Password, [FromBody] ClientUser User)
+        public IActionResult AddClientUser([FromBody] FullClientUser User)
         {
-            if (ValidEmailPassword(Email, Password))
+            if (ValidEmailPassword(User.Email, User.Password))
             {
-                var Credentials = (UserCredentials)Hasher.SecureCredentials(Email, Username, Password);
+                var Credentials = (UserCredentials)Hasher.SecureCredentials(User.Email, User.Username, User.Password);
                 User.Uid = Database.AddClientUser(User, Credentials);
                 return new JsonResult(User);
             }
