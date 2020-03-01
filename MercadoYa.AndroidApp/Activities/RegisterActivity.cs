@@ -29,14 +29,9 @@ namespace MercadoYa.AndroidApp.Activities
         TextInputLayout txtEmail;
         TextInputLayout txtPassword;
         Button btnRegister;
-        //FirebaseAuth Auth;
         IObservableClientAuthenticator Authenticator;
-        FirebaseDatabase Database;
         CoordinatorLayout RootView;
         TextView txtClickToLogin;
-
-
-        //string Name, Phone, Email, Password;
         IFullAppUser Customer;
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -45,7 +40,6 @@ namespace MercadoYa.AndroidApp.Activities
 
             SetContentView(Resource.Layout.register);
             InitControls();
-            InitFirebase();
             ResolveDependencies();
         }
 
@@ -90,7 +84,7 @@ namespace MercadoYa.AndroidApp.Activities
 
         bool InvalidInput()
         {
-            return !UserUtil.IsValidUser(Customer.Email, Customer.Password, Customer.Phone, Customer.Username);
+            return !UserUtil.IsValidUser(Customer);
         }
         void RegisterUser()
         {
@@ -109,14 +103,6 @@ namespace MercadoYa.AndroidApp.Activities
         {
             Snackbar.Make(RootView, "¡Registro exitoso!", Snackbar.LengthShort).Show();
 
-            //DatabaseReference UserReference = Database.GetClientUser(Authenticator.CurrentUser.Uid);
-            //UserReference.SetValue(UserUtil.HashUser(Customer.Email, Customer.Phone, Customer.Username));
-        }
-
-
-        void InitFirebase()
-        {
-            Database = FirebaseHandler.GetDatabase();
         }
 
     }

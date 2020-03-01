@@ -25,7 +25,6 @@ namespace MercadoYa.AndroidApp.Activities
     [Activity(Label = "@string/app_name", Theme = "@style/MercadoYa.Theme", MainLauncher = false)]
     public class MainActivity : AppCompatActivity, IOnMapReadyCallback
     {
-        FirebaseDatabase Database;
         GoogleMap MainMap;
         readonly string[] PermissionGroupLocation = { Manifest.Permission.AccessCoarseLocation, Manifest.Permission.AccessFineLocation };
         const int LocationRequestId = 0;
@@ -49,7 +48,6 @@ namespace MercadoYa.AndroidApp.Activities
             SetContentView(Resource.Layout.activity_main);
 
             InitControls();
-            InitFirebase();
             ProfileEventListener = new UserProfileEventListener();
             var MapFragment = (SupportMapFragment)SupportFragmentManager.FindFragmentById(Resource.Id.map);
             MapFragment.GetMapAsync(this);
@@ -94,10 +92,6 @@ namespace MercadoYa.AndroidApp.Activities
         {
             EssentialsLocation CurrentLocation = await GetCurrentLocation();
             FirebaseHandler.GetDatabase().GetNearStoreUsers(CurrentLocation);
-        }
-        void InitFirebase()
-        {
-            Database = FirebaseHandler.GetDatabase();
         }
         public override bool OnCreateOptionsMenu(IMenu menu)
         {

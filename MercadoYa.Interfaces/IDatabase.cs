@@ -13,6 +13,6 @@ namespace MercadoYa.Interfaces
         IAppUser GetUser(string Uid);
         IAppUser GetUserByEmail(string Email);
         IUserCredentials GetUserCredentials(string Email);
-
+        IEnumerable<IAppUser> GetNearbyStores(ILocationRequest Request);
     }
 }

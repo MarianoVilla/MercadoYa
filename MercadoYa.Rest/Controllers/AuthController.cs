@@ -42,7 +42,6 @@ namespace MercadoYa.Rest.Controllers
             }
             return BadRequest(InvalidUserMessage);
         }
-        //TODO: replace "client" with "customer".
         [HttpPost]
         [Route("users/addcustomer")]
         public IActionResult AddCustomerUser([FromBody] FullCustomerUser User)
@@ -60,6 +59,8 @@ namespace MercadoYa.Rest.Controllers
         [Route("users/signin")]
         public IActionResult SignIn([FromBody] UserCredentials Credentials)
         {
+            if (!ValidEmailPassword(Credentials.Email, Credentials.Password))
+                return UnprocessableEntity();
             var Uid = Auth.AuthUser(Credentials.Email, Credentials.Password) as string;
             if (Uid is null)
             {

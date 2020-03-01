@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MercadoYa.Interfaces;
 using MercadoYa.Lib.Util;
+using MercadoYa.Model.Concrete;
 using MercadoYa.Rest.Mock;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -29,15 +30,29 @@ namespace MercadoYa.Rest.Controllers
             return Ok(); 
         }
         [Route("users")]
-        public IActionResult GetUserInfo([FromBody] string Uid)
+        public IActionResult GetUserInfo(string Uid)
         {
-            var Timestamp = Request.Cookies["timestamp"] as string;
-            if(!ValidTimestamp(Timestamp))
-            {
+            if (IsUnauthorized())
                 return Unauthorized();
-            }
+
             IAppUser User = Database.GetUser(Uid);
             return new JsonResult(User);
+        }
+        [Route("nearbystores")]
+        public IActionResult GetNearbyStores([FromBody] LocationRequest LocRequest)
+        {
+            if (IsUnauthorized())
+                return Unauthorized();
+
+            IEnumerable<IAppUser> Stores = Database.GetNearbyStores(LocRequest);
+            return new JsonResult(Stores);
+        }
+
+
+        bool IsUnauthorized()
+        {
+            var Timestamp = Request.Cookies["timestamp"] as string;
+            return !ValidTimestamp(Timestamp);
         }
         bool ValidTimestamp(string Timestamp)
         {

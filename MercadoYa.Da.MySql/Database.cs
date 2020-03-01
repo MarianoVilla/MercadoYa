@@ -64,5 +64,15 @@ namespace MercadoYa.Da.MySql
             var Result = conn.Query<UserCredentials>(Query, new { Email });
             return Result.FirstOrDefault();
         }
+
+        public IEnumerable<IAppUser> GetNearbyStores(ILocationRequest Request)
+        {
+            using IDbConnection conn = new MySqlConnection(ConnectionString);
+            var Parameters = new DynamicParameters();
+            Parameters.AddByReflection(Request);
+
+            return conn.Query<AppUser>(Const.SpGetNearbyStores, Parameters, commandType: CommandType.StoredProcedure);
+
+        }
     }
 }
