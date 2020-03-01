@@ -22,7 +22,7 @@ namespace MercadoYa.Da.MySql
         }
 
         public string AddStoreUser(IAppUser User, IUserCredentials Credentials) => AddUser(User, Credentials, Const.SpInsertStoreUser);
-        public string AddClientUser(IAppUser User, IUserCredentials Credentials) => AddUser(User, Credentials, Const.SpInsertClientUser);
+        public string AddCustomerUser(IAppUser User, IUserCredentials Credentials) => AddUser(User, Credentials, Const.SpInsertCustomerUser);
 
         string AddUser(IAppUser User, IUserCredentials Credentials, string Stored)
         {
@@ -37,7 +37,7 @@ namespace MercadoYa.Da.MySql
             return Parameters.Get<string>("Uid");
         }
 
-        public IAppUser GetClientUser(string Uid) => InnerGetUser(Uid, QueryCreator.SelectClientUser(Uid));
+        public IAppUser GetCustomerUser(string Uid) => InnerGetUser(Uid, QueryCreator.SelectClientUser(Uid));
         public IAppUser GetStoreUser(string Uid) => InnerGetUser(Uid, QueryCreator.SelectStoreUser(Uid));
         public IAppUser GetUser(string Uid) => InnerGetUser(Uid, QueryCreator.SelectUser(Uid));
 

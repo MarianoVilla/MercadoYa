@@ -42,14 +42,15 @@ namespace MercadoYa.Rest.Controllers
             }
             return BadRequest(InvalidUserMessage);
         }
+        //TODO: replace "client" with "customer".
         [HttpPost]
-        [Route("users/addclient")]
-        public IActionResult AddClientUser([FromBody] FullClientUser User)
+        [Route("users/addcustomer")]
+        public IActionResult AddCustomerUser([FromBody] FullCustomerUser User)
         {
             if (ValidEmailPassword(User.Email, User.Password))
             {
                 var Credentials = (UserCredentials)Hasher.SecureCredentials(User.Email, User.Username, User.Password);
-                User.Uid = Database.AddClientUser(User, Credentials);
+                User.Uid = Database.AddCustomerUser(User, Credentials);
                 return new JsonResult(User);
             }
             return BadRequest(InvalidUserMessage);

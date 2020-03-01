@@ -37,10 +37,10 @@ namespace MercadoYa.AndroidApp.Activities
             CheckKey();
             if (HasPreviousLogin())
             {
-                var TaskCompletionListener = new TaskCompletionListener(TaskCompletionListener_Success, TaskCompletionListener_Failure);
-                Authenticator.SignInWithEmailAndPasswordAsync(User.Email, User.Password);
+                var TaskCompletionListener = new AuthCompletionListener(TaskCompletionListener_Success, TaskCompletionListener_Failure);
                 Authenticator.AddOnFailureListener(TaskCompletionListener);
                 Authenticator.AddOnSuccessListener(TaskCompletionListener);
+                Authenticator.SignInWithEmailAndPasswordAsync(User.Email, User.Password);
             }
             else
             {
@@ -70,13 +70,13 @@ namespace MercadoYa.AndroidApp.Activities
             User = UserUtil.GetUserFromPreferences(Key);
             return StringUtil.NoneNullOrWhiteSpace(User.Email, User.Password);
         }
-        private void TaskCompletionListener_Failure(object sender, EventArgs e)
+        private void TaskCompletionListener_Failure(object sender, Exception e)
         {
             StartActivity(typeof(LoginActivity));
             Finish();
         }
 
-        private void TaskCompletionListener_Success(object sender, EventArgs e)
+        private void TaskCompletionListener_Success(object sender, IAuthResult Result)
         {
             StartActivity(typeof(MainActivity));
             Finish();

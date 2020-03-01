@@ -32,7 +32,7 @@ namespace MercadoYa.AndroidApp.Activities
         private static void Initialize()
         {
             DiContainer = new TinyIoCContainer();
-            DiContainer.Register<IObservableClientAuthenticator, RestAuth>();
+            DiContainer.Register<IObservableClientAuthenticator, RestAuth>().AsMultiInstance();
         }
     }
 }

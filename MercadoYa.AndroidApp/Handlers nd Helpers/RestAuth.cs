@@ -67,8 +67,8 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
                 if (Res.IsSuccessStatusCode)
                 {
                     using HttpContent content = Res.Content;
-                    string data = await content.ReadAsStringAsync();
-                    this.AuthResult = new AuthResult(new FullAppUser() { Uid = data, Email = UserEmail, Password = UserPassword });
+                    string ReturnedUid = await content.ReadAsStringAsync();
+                    this.AuthResult = new AuthResult(new FullAppUser() { Uid = ReturnedUid, Email = UserEmail, Password = UserPassword });
                     this.NotifySuccess();
                 }
                 else
@@ -80,7 +80,50 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
             {
                 this.NotifyError(ex);
             }
-
+        }
+        public async Task CreateCustomerAsync(IFullAppUser User)
+        {
+            try
+            {
+                using HttpResponseMessage Res = await Client.PostAsJsonAsync("Auth/users/addcustomer", User);
+                if (Res.IsSuccessStatusCode)
+                {
+                    using HttpContent content = Res.Content;
+                    User = await content.ReadAsAsync<FullCustomerUser>();
+                    this.AuthResult = new AuthResult(User);
+                    this.NotifySuccess();
+                }
+                else
+                {
+                    throw new InvalidCredentialException();
+                }
+            }
+            catch (Exception ex)
+            {
+                this.NotifyError(ex);
+            }
+        }
+        public async Task CreateStoreAsync(IFullAppUser User)
+        {
+            try
+            {
+                using HttpResponseMessage Res = await Client.PostAsJsonAsync("Auth/users/addcustomer", User);
+                if (Res.IsSuccessStatusCode)
+                {
+                    using HttpContent content = Res.Content;
+                    User = await content.ReadAsAsync<FullStoreUser>();
+                    this.AuthResult = new AuthResult(User);
+                    this.NotifySuccess();
+                }
+                else
+                {
+                    throw new InvalidCredentialException();
+                }
+            }
+            catch (Exception ex)
+            {
+                this.NotifyError(ex);
+            }
         }
 
     }

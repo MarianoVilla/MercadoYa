@@ -7,7 +7,7 @@ namespace MercadoYa.Da.MySql.QueryEngine
     public class Const
     {
         public static readonly string SpInsertStoreUser = "InsertStoreUser";
-        public static readonly string SpInsertClientUser = "InsertClientUser";
+        public static readonly string SpInsertCustomerUser = "InsertCustomerUser";
         public static readonly string SpInsertFood = "InsertFood";
     }
 }

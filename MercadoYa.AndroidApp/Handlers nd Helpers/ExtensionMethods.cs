@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
-
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -37,6 +38,10 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
         {
             return string.IsNullOrWhiteSpace(Name) ? Database.GetReference($"foods") : Database.GetReference($"foods/{Name.ToLower()}");
         }
+        //public async static Task<T> ReadAsObjectAsync<T>(this HttpContent TheContent)
+        //{
+        //    return await TheContent.Rea
+        //}
 
     }
 }

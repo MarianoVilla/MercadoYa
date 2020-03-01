@@ -77,7 +77,7 @@
     <Compile Include="Handlers nd Helpers\MapsHandler.cs" />
     <Compile Include="Handlers nd Helpers\RestAuth.cs" />
     <Compile Include="Handlers nd Helpers\RestDatabase.cs" />
-    <Compile Include="Handlers nd Helpers\TaskCompletionListener.cs" />
+    <Compile Include="Handlers nd Helpers\AuthCompletionListener.cs" />
     <Compile Include="Handlers nd Helpers\TinyIoC.cs" />
     <Compile Include="Handlers nd Helpers\UserProfileEventListener.cs" />
     <Compile Include="Handlers nd Helpers\UserUtil.cs" />

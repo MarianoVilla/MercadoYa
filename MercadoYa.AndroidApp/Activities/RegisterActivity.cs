@@ -12,11 +12,12 @@ using Android.Support.Design.Widget;
 using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
-using Firebase.Auth;
+//using Firebase.Auth;
 using Firebase.Database;
 using Java.Util;
 using MercadoYa.AndroidApp.Handlers_nd_Helpers;
 using MercadoYa.Interfaces;
+using MercadoYa.Model.Concrete;
 
 namespace MercadoYa.AndroidApp.Activities
 {
@@ -35,7 +36,8 @@ namespace MercadoYa.AndroidApp.Activities
         TextView txtClickToLogin;
 
 
-        string Name, Phone, Email, Password;
+        //string Name, Phone, Email, Password;
+        IFullAppUser Customer;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -50,6 +52,7 @@ namespace MercadoYa.AndroidApp.Activities
         private void ResolveDependencies()
         {
             Authenticator = App.DiContainer.Resolve<IObservableClientAuthenticator>();
+            Customer = new FullCustomerUser();
         }
 
         void InitControls()
@@ -74,10 +77,10 @@ namespace MercadoYa.AndroidApp.Activities
 
         private void BtnRegister_Click(object sender, EventArgs e)
         {
-            Name = txtName.EditText.Text;
-            Phone = txtPhone.EditText.Text;
-            Email = txtEmail.EditText.Text;
-            Password = txtPassword.EditText.Text;
+            Customer.Username = txtName.EditText.Text;
+            Customer.Phone = txtPhone.EditText.Text;
+            Customer.Email = txtEmail.EditText.Text;
+            Customer.Password = txtPassword.EditText.Text;
 
             if (InvalidInput())
                 return;
@@ -87,27 +90,27 @@ namespace MercadoYa.AndroidApp.Activities
 
         bool InvalidInput()
         {
-            return !UserUtil.IsValidUser(Email, Password, Phone, Name);
+            return !UserUtil.IsValidUser(Customer.Email, Customer.Password, Customer.Phone, Customer.Username);
         }
         void RegisterUser()
         {
-            var TaskCompletionListener = new TaskCompletionListener(TaskCompletionListener_Success, TaskCompletionListener_Failure);
-            Authenticator.SignInWithEmailAndPasswordAsync(Email, Password);
+            var TaskCompletionListener = new AuthCompletionListener(TaskCompletionListener_Success, TaskCompletionListener_Failure);
+            Authenticator.CreateCustomerAsync(Customer);
             Authenticator.AddOnFailureListener(TaskCompletionListener);
             Authenticator.AddOnSuccessListener(TaskCompletionListener);
         }
 
-        private void TaskCompletionListener_Failure(object sender, EventArgs e)
+        private void TaskCompletionListener_Failure(object sender, Exception e)
         {
             Snackbar.Make(RootView, "Ocurrió un error al registrarse", Snackbar.LengthShort).Show();
         }
 
-        private void TaskCompletionListener_Success(object sender, EventArgs e)
+        private void TaskCompletionListener_Success(object sender, IAuthResult Result)
         {
             Snackbar.Make(RootView, "¡Registro exitoso!", Snackbar.LengthShort).Show();
 
-            DatabaseReference UserReference = Database.GetClientUser(Authenticator.CurrentUser.Uid);
-            UserReference.SetValue(UserUtil.HashUser(Email, Phone, Name));
+            //DatabaseReference UserReference = Database.GetClientUser(Authenticator.CurrentUser.Uid);
+            //UserReference.SetValue(UserUtil.HashUser(Customer.Email, Customer.Phone, Customer.Username));
         }
 
 

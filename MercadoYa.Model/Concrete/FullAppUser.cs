@@ -22,5 +22,6 @@ namespace MercadoYa.Model.Concrete
         public string ProfilePic { get; set; }
         public string Phone { get; set; }
         public string UserType { get; set; }
+
     }
 }

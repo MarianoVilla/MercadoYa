@@ -11,7 +11,7 @@ using Android.Support.Design.Widget;
 using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
-using Firebase.Auth;
+//using Firebase.Auth;
 using MercadoYa.AndroidApp.Handlers_nd_Helpers;
 using MercadoYa.Interfaces;
 
@@ -66,19 +66,19 @@ namespace MercadoYa.AndroidApp.Activities
             if (InvalidInput())
                 return;
 
-            var TaskCompletionListener = new TaskCompletionListener(TaskCompletionListener_Success, TaskCompletionListener_Failure);
+            var TaskCompletionListener = new AuthCompletionListener(TaskCompletionListener_Success, TaskCompletionListener_Failure);
 
-            Authenticator.SignInWithEmailAndPasswordAsync(Email, Password);
             Authenticator.AddOnFailureListener(TaskCompletionListener);
             Authenticator.AddOnSuccessListener(TaskCompletionListener);
+            Authenticator.SignInWithEmailAndPasswordAsync(Email, Password);
         }
 
-        private void TaskCompletionListener_Failure(object sender, EventArgs e)
+        private void TaskCompletionListener_Failure(object sender, Exception e)
         {
             Snackbar.Make(RootView, "Algo salió mal", Snackbar.LengthShort).Show();
         }
 
-        private void TaskCompletionListener_Success(object sender, EventArgs e)
+        private void TaskCompletionListener_Success(object sender, IAuthResult Result)
         {
             UserUtil.SaveIfValid(Email, Password);
             StartActivity(typeof(MainActivity));
