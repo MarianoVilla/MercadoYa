@@ -14,17 +14,16 @@ using Android.Support.V4.App;
 using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
-using Firebase;
 using Firebase.Database;
 using MercadoYa.AndroidApp.Handlers_nd_Helpers;
 using Xamarin.Essentials;
 using EssentialsLocation = Xamarin.Essentials.Location;
 
-namespace MercadoYa.AndroidApp
+namespace MercadoYa.AndroidApp.Activities
 {
     //TODO: refactor the fuck out of this.
     [Activity(Label = "@string/app_name", Theme = "@style/MercadoYa.Theme", MainLauncher = false)]
-    public class MainActivity : AppCompatActivity, IOnMapReadyCallback 
+    public class MainActivity : AppCompatActivity, IOnMapReadyCallback
     {
         FirebaseDatabase Database;
         GoogleMap MainMap;
@@ -119,11 +118,11 @@ namespace MercadoYa.AndroidApp
 
         private void FabOnClick(object sender, EventArgs eventArgs)
         {
-            View view = (View)sender;
+            var view = (View)sender;
             Snackbar.Make(view, "Replace with your own action", Snackbar.LengthLong)
-                .SetAction("Action", (Android.Views.View.IOnClickListener)null).Show();
+                .SetAction("Action", (View.IOnClickListener)null).Show();
         }
-        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
         {
             Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
@@ -150,12 +149,10 @@ namespace MercadoYa.AndroidApp
         bool CheckLocationPermission()
         {
             if ((int)Build.VERSION.SdkInt < 23)
-            {
                 return true;
-            }
             bool PermissionGranted = false;
-            if(ActivityCompat.CheckSelfPermission(this, Manifest.Permission.AccessFineLocation) != Permission.Granted &&
-                ActivityCompat.CheckSelfPermission(this,Manifest.Permission.AccessCoarseLocation) != Permission.Granted)
+            if (Android.Support.V4.Content.ContextCompat.CheckSelfPermission(this, Manifest.Permission.AccessFineLocation) != Permission.Granted &&
+                Android.Support.V4.Content.ContextCompat.CheckSelfPermission(this, Manifest.Permission.AccessCoarseLocation) != Permission.Granted)
             {
                 PermissionGranted = false;
                 RequestPermissions(PermissionGroupLocation, LocationRequestId);
@@ -188,7 +185,7 @@ namespace MercadoYa.AndroidApp
         {
             if (!CheckLocationPermission())
                 return;
-            if(LastLocation != null)
+            if (LastLocation != null)
             {
                 EssentialsLocation UserLocation = await GetCurrentLocation();
                 var MyPosition = new LatLng(UserLocation.Latitude, UserLocation.Longitude);
@@ -203,9 +200,7 @@ namespace MercadoYa.AndroidApp
         void StartLocationUpdate()
         {
             if (CheckLocationPermission())
-            {
                 LocationClient.RequestLocationUpdates(LocRequest, LocationCallback, null);
-            }
         }
     }
 }

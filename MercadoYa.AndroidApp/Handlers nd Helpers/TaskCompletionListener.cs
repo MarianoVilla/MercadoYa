@@ -5,7 +5,6 @@ using System.Text;
 
 using Android.App;
 using Android.Content;
-//using Android.Gms.Tasks;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
@@ -18,6 +17,11 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
     {
         public event EventHandler Success;
         public event EventHandler Failure;
+
+        public TaskCompletionListener(EventHandler SuccessMethod, EventHandler FailureMethod)
+        {
+
+        }
 
         public void OnFailure(Exception e)
         {

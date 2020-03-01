@@ -25,6 +25,7 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
         public List<IOnSuccessListener> OnSuccessListeners { get; } = new List<IOnSuccessListener>();
         public List<IOnFailureListener> OnFailureListeners { get; } = new List<IOnFailureListener>();
         public IAuthResult AuthResult { get; private set; }
+        public IAppUser CurrentUser { get { return AuthResult.User; } }
 
         public RestAuth()
         {

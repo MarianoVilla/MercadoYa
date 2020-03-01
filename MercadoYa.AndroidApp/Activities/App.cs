@@ -27,12 +27,12 @@ namespace MercadoYa.AndroidApp.Activities
             base.OnCreate();
         }
 
-        public static IDiContainer DIContainer { get; private set; }
+        public static IDiContainer DiContainer { get; private set; }
 
         private static void Initialize()
         {
-            DIContainer = new TinyIoCContainer();
-            DIContainer.Register<IObservableClientAuthenticator, RestAuth>();
+            DiContainer = new TinyIoCContainer();
+            DiContainer.Register<IObservableClientAuthenticator, RestAuth>();
         }
     }
 }

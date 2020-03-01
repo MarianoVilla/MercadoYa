@@ -16,6 +16,7 @@ using Firebase.Auth;
 using Firebase.Database;
 using Java.Util;
 using MercadoYa.AndroidApp.Handlers_nd_Helpers;
+using MercadoYa.Interfaces;
 
 namespace MercadoYa.AndroidApp.Activities
 {
@@ -27,10 +28,10 @@ namespace MercadoYa.AndroidApp.Activities
         TextInputLayout txtEmail;
         TextInputLayout txtPassword;
         Button btnRegister;
-        FirebaseAuth Auth;
+        //FirebaseAuth Auth;
+        IObservableClientAuthenticator Authenticator;
         FirebaseDatabase Database;
         CoordinatorLayout RootView;
-        TaskCompletionListener TaskCompletionListener = new TaskCompletionListener();
         TextView txtClickToLogin;
 
 
@@ -43,7 +44,14 @@ namespace MercadoYa.AndroidApp.Activities
             SetContentView(Resource.Layout.register);
             InitControls();
             InitFirebase();
+            ResolveDependencies();
         }
+
+        private void ResolveDependencies()
+        {
+            Authenticator = App.DiContainer.Resolve<IObservableClientAuthenticator>();
+        }
+
         void InitControls()
         {
             RootView = (CoordinatorLayout)FindViewById(Resource.Id.rootView);
@@ -83,11 +91,10 @@ namespace MercadoYa.AndroidApp.Activities
         }
         void RegisterUser()
         {
-            TaskCompletionListener.Success += TaskCompletionListener_Success;
-            TaskCompletionListener.Failure += TaskCompletionListener_Failure;
-            //Auth.CreateUserWithEmailAndPassword(Email, Password)
-            //    .AddOnSuccessListener(this, TaskCompletionListener)
-            //    .AddOnFailureListener(this, TaskCompletionListener);
+            var TaskCompletionListener = new TaskCompletionListener(TaskCompletionListener_Success, TaskCompletionListener_Failure);
+            Authenticator.SignInWithEmailAndPasswordAsync(Email, Password);
+            Authenticator.AddOnFailureListener(TaskCompletionListener);
+            Authenticator.AddOnSuccessListener(TaskCompletionListener);
         }
 
         private void TaskCompletionListener_Failure(object sender, EventArgs e)
@@ -99,7 +106,7 @@ namespace MercadoYa.AndroidApp.Activities
         {
             Snackbar.Make(RootView, "¡Registro exitoso!", Snackbar.LengthShort).Show();
 
-            DatabaseReference UserReference = Database.GetClientUser(Auth.CurrentUser.Uid);
+            DatabaseReference UserReference = Database.GetClientUser(Authenticator.CurrentUser.Uid);
             UserReference.SetValue(UserUtil.HashUser(Email, Phone, Name));
         }
 
@@ -107,7 +114,6 @@ namespace MercadoYa.AndroidApp.Activities
         void InitFirebase()
         {
             Database = FirebaseHandler.GetDatabase();
-            Auth = FirebaseHandler.GetFirebaseAuth();
         }
 
     }

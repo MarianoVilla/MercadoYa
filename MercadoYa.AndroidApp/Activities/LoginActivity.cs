@@ -13,6 +13,7 @@ using Android.Views;
 using Android.Widget;
 using Firebase.Auth;
 using MercadoYa.AndroidApp.Handlers_nd_Helpers;
+using MercadoYa.Interfaces;
 
 namespace MercadoYa.AndroidApp.Activities
 {
@@ -25,7 +26,7 @@ namespace MercadoYa.AndroidApp.Activities
         TextInputLayout txtPassword;
         Button btnLogin;
         CoordinatorLayout RootView;
-        FirebaseAuth Auth;
+        IObservableClientAuthenticator Authenticator;
 
         string Email, Password;
 
@@ -35,7 +36,12 @@ namespace MercadoYa.AndroidApp.Activities
 
             SetContentView(Resource.Layout.login);
             InitControls();
-            InitFirebase();
+            ResolveDependencies();
+        }
+
+        private void ResolveDependencies()
+        {
+            Authenticator = App.DiContainer.Resolve<IObservableClientAuthenticator>();
         }
 
         private void InitControls()
@@ -50,10 +56,6 @@ namespace MercadoYa.AndroidApp.Activities
             txtGoToRegister.Click += TxtGoToRegister_Click;
 
         }
-        void InitFirebase()
-        {
-            Auth = FirebaseHandler.GetFirebaseAuth();
-        }
 
         private void BtnLogin_Click(object sender, EventArgs e)
         {
@@ -64,15 +66,11 @@ namespace MercadoYa.AndroidApp.Activities
             if (InvalidInput())
                 return;
 
-            var TaskCompletionListener = new TaskCompletionListener();
-            TaskCompletionListener.Success += TaskCompletionListener_Success;
-            TaskCompletionListener.Failure += TaskCompletionListener_Failure;
+            var TaskCompletionListener = new TaskCompletionListener(TaskCompletionListener_Success, TaskCompletionListener_Failure);
 
-
-
-            //Auth.SignInWithEmailAndPassword(Email, Password)
-            //    .AddOnSuccessListener(this, TaskCompletionListener)
-            //    .AddOnFailureListener(this, TaskCompletionListener);
+            Authenticator.SignInWithEmailAndPasswordAsync(Email, Password);
+            Authenticator.AddOnFailureListener(TaskCompletionListener);
+            Authenticator.AddOnSuccessListener(TaskCompletionListener);
         }
 
         private void TaskCompletionListener_Failure(object sender, EventArgs e)

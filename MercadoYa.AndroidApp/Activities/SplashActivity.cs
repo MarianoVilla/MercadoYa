@@ -24,12 +24,7 @@ namespace MercadoYa.AndroidApp.Activities
     {
         FullAppUser User;
         string Key;
-
         IObservableClientAuthenticator Authenticator;
-        public SplashActivity()
-        {
-            Authenticator = App.DIContainer.Resolve<IObservableClientAuthenticator>();
-        }
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -38,24 +33,26 @@ namespace MercadoYa.AndroidApp.Activities
         protected override void OnResume()
         {
             base.OnResume();
+            ResolveDependencies();
             CheckKey();
             if (HasPreviousLogin())
             {
-                var TaskCompletionListener = new TaskCompletionListener();
-                TaskCompletionListener.Success += TaskCompletionListener_Success;
-                TaskCompletionListener.Failure += TaskCompletionListener_Failure;
+                var TaskCompletionListener = new TaskCompletionListener(TaskCompletionListener_Success, TaskCompletionListener_Failure);
                 Authenticator.SignInWithEmailAndPasswordAsync(User.Email, User.Password);
                 Authenticator.AddOnFailureListener(TaskCompletionListener);
                 Authenticator.AddOnSuccessListener(TaskCompletionListener);
-                //FirebaseHandler.GetFirebaseAuth().SignInWithEmailAndPassword(User.Email, User.Password)
-                //    .AddOnSuccessListener(this, TaskCompletionListener)
-                //    .AddOnFailureListener(this, TaskCompletionListener);
             }
             else
             {
                 StartActivity(typeof(LoginActivity));
             }
         }
+
+        private void ResolveDependencies()
+        {
+            Authenticator = App.DiContainer.Resolve<IObservableClientAuthenticator>();
+        }
+
         void CheckKey()
         {
             if (HasKey())
