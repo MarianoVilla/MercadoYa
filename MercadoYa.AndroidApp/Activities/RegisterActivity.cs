@@ -99,10 +99,13 @@ namespace MercadoYa.AndroidApp.Activities
             Snackbar.Make(RootView, "Ocurrió un error al registrarse", Snackbar.LengthShort).Show();
         }
 
-        private void TaskCompletionListener_Success(object sender, IAuthResult Result)
+        void TaskCompletionListener_Success(object sender, IAuthResult Result)
         {
             Snackbar.Make(RootView, "¡Registro exitoso!", Snackbar.LengthShort).Show();
-
+            var User = Result as FullAppUser;
+            UserUtil.SaveIfValid(User.Email, User.Password);
+            StartActivity(typeof(MainActivity));
+            Finish();
         }
 
     }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text;
 
 using Android.App;
@@ -11,6 +13,7 @@ using Android.Views;
 using Android.Widget;
 using MercadoYa.AndroidApp.Handlers_nd_Helpers;
 using MercadoYa.Interfaces;
+using MercadoYa.Model;
 using TinyIoC;
 
 namespace MercadoYa.AndroidApp.Activities
@@ -31,8 +34,22 @@ namespace MercadoYa.AndroidApp.Activities
 
         private static void Initialize()
         {
+            InitDi();
+            InitHttpClient();
+        }
+        static void InitDi()
+        {
             DiContainer = new TinyIoCContainer();
             DiContainer.Register<IObservableClientAuthenticator, RestAuth>().AsMultiInstance();
+            DiContainer.Register<IRestDatabase, RestDatabase>();
+        }
+        static void InitHttpClient()
+        {
+            var Cookies = new CookieContainer();
+            var Handler = new HttpClientHandler() { CookieContainer = Cookies };
+
+            Const.GlobalHttpClient = new HttpClient(Handler) { BaseAddress = Const.RestUri };
+            Const.GlobalHttpClient.DefaultRequestHeaders.Add("accept", "*/*");
         }
     }
 }

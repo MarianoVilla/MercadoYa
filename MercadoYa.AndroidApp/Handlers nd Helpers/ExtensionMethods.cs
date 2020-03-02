@@ -21,15 +21,15 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
         {
             return Database.GetReference($"users/storeusers/{Uid}");
         }
-        public static DatabaseReference GetNearStoreUsers(this FirebaseDatabase Database, Location Loc)
-        {
-            var StoreUsers = Database.GetReference($"users/storeusers");
-            var OrderedByLocation = StoreUsers.OrderByChild("location");
-            var OrderedByLatitude = OrderedByLocation.OrderByChild("latitude");
-            var StartAt = OrderedByLatitude.StartAt(Loc.Latitude - .1);
-            var LimitTo = StartAt.LimitToFirst(1).Ref;
-            return Database.GetReference($"users/storeusers").OrderByChild("location").OrderByChild("latitude").StartAt(Loc.Latitude - .1).LimitToFirst(1).Ref;
-        }
+        //public static DatabaseReference GetNearStoreUsers(this FirebaseDatabase Database, Location Loc)
+        //{
+        //    var StoreUsers = Database.GetReference($"users/storeusers");
+        //    var OrderedByLocation = StoreUsers.OrderByChild("location");
+        //    var OrderedByLatitude = OrderedByLocation.OrderByChild("latitude");
+        //    var StartAt = OrderedByLatitude.StartAt(Loc.Latitude - .1);
+        //    var LimitTo = StartAt.LimitToFirst(1).Ref;
+        //    return Database.GetReference($"users/storeusers").OrderByChild("location").OrderByChild("latitude").StartAt(Loc.Latitude - .1).LimitToFirst(1).Ref;
+        //}
         public static DatabaseReference GetClientUser(this FirebaseDatabase Database, string Uid)
         {
             return Database.GetReference($"users/clientusers/{Uid}");

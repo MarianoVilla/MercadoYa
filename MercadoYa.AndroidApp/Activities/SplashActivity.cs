@@ -72,6 +72,7 @@ namespace MercadoYa.AndroidApp.Activities
         }
         private void TaskCompletionListener_Failure(object sender, Exception e)
         {
+            Snackbar.Make(RootView, "Algo salió mal", Snackbar.LengthShort).Show();
             StartActivity(typeof(LoginActivity));
             Finish();
         }

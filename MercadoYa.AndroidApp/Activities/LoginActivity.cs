@@ -14,6 +14,7 @@ using Android.Widget;
 //using Firebase.Auth;
 using MercadoYa.AndroidApp.Handlers_nd_Helpers;
 using MercadoYa.Interfaces;
+using MercadoYa.Model.Concrete;
 
 namespace MercadoYa.AndroidApp.Activities
 {
@@ -80,7 +81,8 @@ namespace MercadoYa.AndroidApp.Activities
 
         private void TaskCompletionListener_Success(object sender, IAuthResult Result)
         {
-            UserUtil.SaveIfValid(Email, Password);
+            var User = Result as FullAppUser;
+            UserUtil.SaveIfValid(User.Email, User.Password);
             StartActivity(typeof(MainActivity));
             Finish();
         }

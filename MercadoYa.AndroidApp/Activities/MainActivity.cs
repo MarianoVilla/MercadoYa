@@ -16,7 +16,10 @@ using Android.Views;
 using Android.Widget;
 using Firebase.Database;
 using MercadoYa.AndroidApp.Handlers_nd_Helpers;
+using MercadoYa.Interfaces;
+//using MercadoYa.Model.Concrete;
 using Xamarin.Essentials;
+using MyLocationRequest = MercadoYa.Model.Concrete.LocationRequest;
 using EssentialsLocation = Xamarin.Essentials.Location;
 
 namespace MercadoYa.AndroidApp.Activities
@@ -34,6 +37,7 @@ namespace MercadoYa.AndroidApp.Activities
         LocationCallbackHelper LocationCallback;
         AutoCompleteTextView txtSearch;
         MapsHandler MapsHandler;
+        IRestDatabase Database;
 
         UserProfileEventListener ProfileEventListener;
 
@@ -56,9 +60,14 @@ namespace MercadoYa.AndroidApp.Activities
             CreateLocationRequest();
             StartLocationUpdate();
             ProfileEventListener.Create();
+            ResolveDependencies();
 
-            Task.Run(() => SearchNearbyPlaces());
+            //Task.Run(() => SearchNearbyPlaces());
 
+        }
+        private void ResolveDependencies()
+        {
+            Database = App.DiContainer.Resolve<IRestDatabase>();
         }
         string[] FoodSuggestions;
         private void InitControls()
@@ -91,7 +100,18 @@ namespace MercadoYa.AndroidApp.Activities
         async Task SearchNearbyPlaces()
         {
             EssentialsLocation CurrentLocation = await GetCurrentLocation();
-            FirebaseHandler.GetDatabase().GetNearStoreUsers(CurrentLocation);
+            var NearbyStores = await Database.GetNearbyStoresAsync(new MyLocationRequest(CurrentLocation.Longitude, CurrentLocation.Latitude));
+            foreach(var store in NearbyStores)
+            {
+                var Options = new MarkerOptions();
+                Options.SetPosition(new LatLng(store.Latitude, store.Longitude));
+                Options.SetTitle(store.DisplayableName);
+
+                var bmDescriptor = BitmapDescriptorFactory.FromResource(Resource.Drawable.ic_store_mall_directory_128_28856);
+                Options.SetIcon(bmDescriptor);
+
+                MainMap.AddMarker(Options);
+            }
         }
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
@@ -132,12 +152,13 @@ namespace MercadoYa.AndroidApp.Activities
             MapsHandler = new MapsHandler(MapKey);
         }
 
-        private void MainMap_CameraIdle(object sender, EventArgs e)
+        async void MainMap_CameraIdle(object sender, EventArgs e)
         {
             //TODO: add a current location/search location text edit.
             //Then we can use the MapsHandler to get the location updated:
             //var CurrentLocation = MainMap.CameraPosition.Target;
             //var CurrentLocationText = MapsHandler.FindCoordinateAddress(CurrentLocation);
+            await SearchNearbyPlaces();
         }
 
         bool CheckLocationPermission()

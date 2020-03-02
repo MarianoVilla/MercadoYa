@@ -39,6 +39,7 @@ namespace MercadoYa.Rest.Controllers
             return new JsonResult(User);
         }
         [Route("nearbystores")]
+        [HttpPost]
         public IActionResult GetNearbyStores([FromBody] LocationRequest LocRequest)
         {
             if (IsUnauthorized())

@@ -21,17 +21,11 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
 {
     public class RestAuth : IObservableClientAuthenticator
     {
-        HttpClient Client;
         public List<IOnSuccessListener> OnSuccessListeners { get; } = new List<IOnSuccessListener>();
         public List<IOnFailureListener> OnFailureListeners { get; } = new List<IOnFailureListener>();
         public IAuthResult AuthResult { get; private set; }
         public IAppUser CurrentUser { get { return AuthResult.User; } }
 
-        public RestAuth()
-        {
-            Client = new HttpClient() { BaseAddress = Const.RestUri  };
-            Client.DefaultRequestHeaders.Add("accept", "*/*");
-        }
 
         #region Observer boilerplate.
         public void AddOnSuccessListener(IOnSuccessListener Listener)
@@ -63,7 +57,7 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
         {
             try
             {
-                using HttpResponseMessage Res = await Client.PostAsJsonAsync("Auth/users/signin", new { Email = UserEmail, Password = UserPassword });
+                using HttpResponseMessage Res = await Const.GlobalHttpClient.PostAsJsonAsync("Auth/users/signin", new { Email = UserEmail, Password = UserPassword });
                 if (Res.IsSuccessStatusCode)
                 {
                     using HttpContent content = Res.Content;
@@ -85,7 +79,7 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
         {
             try
             {
-                using HttpResponseMessage Res = await Client.PostAsJsonAsync("Auth/users/addcustomer", User);
+                using HttpResponseMessage Res = await Const.GlobalHttpClient.PostAsJsonAsync("Auth/users/addcustomer", User);
                 if (Res.IsSuccessStatusCode)
                 {
                     using HttpContent content = Res.Content;
@@ -107,7 +101,7 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
         {
             try
             {
-                using HttpResponseMessage Res = await Client.PostAsJsonAsync("Auth/users/addcustomer", User);
+                using HttpResponseMessage Res = await Const.GlobalHttpClient.PostAsJsonAsync("Auth/users/addcustomer", User);
                 if (Res.IsSuccessStatusCode)
                 {
                     using HttpContent content = Res.Content;

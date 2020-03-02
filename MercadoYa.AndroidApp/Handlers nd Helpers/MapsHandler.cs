@@ -51,7 +51,7 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
                     if (GeoCodeData.results[0] != null)
                     {
                         PlaceAddress = GeoCodeData.results[0].formatted_address;
-                    }
+                    }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
                 }
             }
             return PlaceAddress;

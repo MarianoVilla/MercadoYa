@@ -7,6 +7,7 @@ namespace MercadoYa.Interfaces
     public interface IAppUser
     {
         string Uid { get; set; }
+        string DisplayableName { get; set; }
         string Direction { get; set; }
         string City { get; set; }
         double Longitude { get; set; }
