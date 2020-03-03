@@ -43,7 +43,7 @@ namespace MercadoYa.AndroidApp.Activities
             ResolveDependencies();
         }
 
-        private void ResolveDependencies()
+        void ResolveDependencies()
         {
             Authenticator = App.DiContainer.Resolve<IObservableClientAuthenticator>();
             Customer = new FullCustomerUser();
@@ -69,7 +69,7 @@ namespace MercadoYa.AndroidApp.Activities
             Finish();
         }
 
-        private void BtnRegister_Click(object sender, EventArgs e)
+        void BtnRegister_Click(object sender, EventArgs e)
         {
             Customer.Username = txtName.EditText.Text;
             Customer.Phone = txtPhone.EditText.Text;
@@ -94,7 +94,7 @@ namespace MercadoYa.AndroidApp.Activities
             Authenticator.AddOnSuccessListener(TaskCompletionListener);
         }
 
-        private void TaskCompletionListener_Failure(object sender, Exception e)
+        void TaskCompletionListener_Failure(object sender, Exception e)
         {
             Snackbar.Make(RootView, "Ocurrió un error al registrarse", Snackbar.LengthShort).Show();
         }
@@ -102,7 +102,7 @@ namespace MercadoYa.AndroidApp.Activities
         void TaskCompletionListener_Success(object sender, IAuthResult Result)
         {
             Snackbar.Make(RootView, "¡Registro exitoso!", Snackbar.LengthShort).Show();
-            var User = Result as FullAppUser;
+            var User = Result.User as FullAppUser;
             UserUtil.SaveIfValid(User.Email, User.Password);
             StartActivity(typeof(MainActivity));
             Finish();

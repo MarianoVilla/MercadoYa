@@ -13,6 +13,7 @@ using MercadoYa.Lib.Util;
 
 namespace MercadoYa.Da.MySql
 {
+    //
     public class Database : IDatabase
     {
         public readonly string ConnectionString;

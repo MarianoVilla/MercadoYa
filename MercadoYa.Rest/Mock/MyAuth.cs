@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-
 namespace MercadoYa.Rest.Mock
 {
+    //ToDo: move to dependencies namespace.
     public class MyAuth : IAuthenticator
     {
         readonly IDatabase Database;
@@ -17,15 +17,15 @@ namespace MercadoYa.Rest.Mock
             this.Database = Database;
             this.Hasher = Hasher;
         }
-
+        //TODO: find a better solution than returning null. Don't return null!
         public object AuthUser(string Email, string Password)
         {
             IUserCredentials Credentials = Database.GetUserCredentials(Email);
-            if(Hasher.CheckPassword(Credentials.Password, Password))
+            if(Credentials is null || !Hasher.CheckPassword(Credentials.Password, Password))
             {
-                return Credentials.UserUid;
+                return null;
             }
-            return null;
+            return Credentials.UserUid;
         }
     }
 }

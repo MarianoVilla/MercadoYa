@@ -33,6 +33,7 @@ namespace MercadoYa.AndroidApp.Activities
         protected override void OnResume()
         {
             base.OnResume();
+            InitControls();
             ResolveDependencies();
             CheckKey();
             if (HasPreviousLogin())
@@ -46,6 +47,10 @@ namespace MercadoYa.AndroidApp.Activities
             {
                 StartActivity(typeof(LoginActivity));
             }
+        }
+
+        private void InitControls()
+        {
         }
 
         private void ResolveDependencies()
@@ -72,7 +77,7 @@ namespace MercadoYa.AndroidApp.Activities
         }
         private void TaskCompletionListener_Failure(object sender, Exception e)
         {
-            Snackbar.Make(RootView, "Algo salió mal", Snackbar.LengthShort).Show();
+            Toast.MakeText(this, "Algo salió mal", ToastLength.Short);
             StartActivity(typeof(LoginActivity));
             Finish();
         }
