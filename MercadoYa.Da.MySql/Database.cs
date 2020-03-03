@@ -17,10 +17,7 @@ namespace MercadoYa.Da.MySql
     public class Database : IDatabase
     {
         public readonly string ConnectionString;
-        public Database(string ConnectionString)
-        {
-            this.ConnectionString = ConnectionString;
-        }
+        public Database(string ConnectionString) => this.ConnectionString = ConnectionString;
 
         public string AddStoreUser(IAppUser User, IUserCredentials Credentials) => AddUser(User, Credentials, Const.SpInsertStoreUser);
         public string AddCustomerUser(IAppUser User, IUserCredentials Credentials) => AddUser(User, Credentials, Const.SpInsertCustomerUser);
