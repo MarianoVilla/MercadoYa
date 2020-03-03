@@ -21,6 +21,8 @@ using MercadoYa.Interfaces;
 using Xamarin.Essentials;
 using MyLocationRequest = MercadoYa.Model.Concrete.LocationRequest;
 using EssentialsLocation = Xamarin.Essentials.Location;
+using Android.Gms.Common;
+using MercadoYa.AndroidApp.Fragments;
 
 namespace MercadoYa.AndroidApp.Activities
 {
@@ -52,6 +54,7 @@ namespace MercadoYa.AndroidApp.Activities
             SetContentView(Resource.Layout.activity_main);
 
             InitControls();
+            TestIfGooglePlayServicesIsInstalled();
             ProfileEventListener = new UserProfileEventListener();
             var MapFragment = (SupportMapFragment)SupportFragmentManager.FindFragmentById(Resource.Id.map);
             MapFragment.GetMapAsync(this);
@@ -59,7 +62,7 @@ namespace MercadoYa.AndroidApp.Activities
             CheckLocationPermission();
             CreateLocationRequest();
             StartLocationUpdate();
-            ProfileEventListener.Create();
+            //ProfileEventListener.Create();
             ResolveDependencies();
 
             //Task.Run(() => SearchNearbyPlaces());
@@ -193,7 +196,7 @@ namespace MercadoYa.AndroidApp.Activities
         {
             LastLocation = e.Location;
             var Position = new LatLng(LastLocation.Latitude, LastLocation.Longitude);
-            MainMap.AnimateCamera(CameraUpdateFactory.NewLatLngZoom(Position, 18));
+            MainMap.AnimateCamera(CameraUpdateFactory.NewLatLngZoom(Position, 17));
 
         }
         async void UpdateMapLocation()
@@ -204,7 +207,7 @@ namespace MercadoYa.AndroidApp.Activities
             {
                 EssentialsLocation UserLocation = await GetCurrentLocation();
                 var MyPosition = new LatLng(UserLocation.Latitude, UserLocation.Longitude);
-                MainMap.MoveCamera(CameraUpdateFactory.NewLatLngZoom(MyPosition, 18));
+                MainMap.MoveCamera(CameraUpdateFactory.NewLatLngZoom(MyPosition, 17));
             }
         }
         async Task<EssentialsLocation> GetCurrentLocation()
@@ -216,6 +219,27 @@ namespace MercadoYa.AndroidApp.Activities
         {
             if (CheckLocationPermission())
                 LocationClient.RequestLocationUpdates(LocRequest, LocationCallback, null);
+        }
+
+        public static readonly int RC_INSTALL_GOOGLE_PLAY_SERVICES = 1000;
+        bool TestIfGooglePlayServicesIsInstalled()
+        {
+            var queryResult = GoogleApiAvailability.Instance.IsGooglePlayServicesAvailable(this);
+            if (queryResult == ConnectionResult.Success)
+            {
+                return true;
+            }
+
+            if (GoogleApiAvailability.Instance.IsUserResolvableError(queryResult))
+            {
+                var errorString = GoogleApiAvailability.Instance.GetErrorString(queryResult);
+                var errorDialog = GoogleApiAvailability.Instance.GetErrorDialog(this, queryResult, RC_INSTALL_GOOGLE_PLAY_SERVICES);
+                var dialogFrag = new MyErrorDialogFragment(errorDialog);
+
+                dialogFrag.Show(FragmentManager, "GooglePlayServicesDialog");
+            }
+
+            return false;
         }
     }
 }

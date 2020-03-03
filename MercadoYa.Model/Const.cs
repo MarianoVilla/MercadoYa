@@ -7,7 +7,7 @@ namespace MercadoYa.Model
 {
     public class Const
     {
-        public static readonly Uri RestUri = new Uri("https://b00cb4fe.ngrok.io/");
+        public static readonly Uri RestUri = new Uri("http://f72547ae.ngrok.io/");
         public static HttpClient GlobalHttpClient;
     }
 }
