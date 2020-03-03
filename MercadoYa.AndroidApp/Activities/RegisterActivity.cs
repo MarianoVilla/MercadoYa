@@ -102,7 +102,7 @@ namespace MercadoYa.AndroidApp.Activities
         void TaskCompletionListener_Success(object sender, IAuthResult Result)
         {
             Snackbar.Make(RootView, "¡Registro exitoso!", Snackbar.LengthShort).Show();
-            var User = Result.User as FullAppUser;
+            var User = Result.User as FullCustomerUser;
             UserUtil.SaveIfValid(User.Email, User.Password);
             StartActivity(typeof(MainActivity));
             Finish();

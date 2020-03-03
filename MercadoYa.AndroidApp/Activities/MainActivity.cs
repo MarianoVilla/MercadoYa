@@ -23,6 +23,7 @@ using MyLocationRequest = MercadoYa.Model.Concrete.LocationRequest;
 using EssentialsLocation = Xamarin.Essentials.Location;
 using Android.Gms.Common;
 using MercadoYa.AndroidApp.Fragments;
+using System.Collections.Generic;
 
 namespace MercadoYa.AndroidApp.Activities
 {
@@ -40,6 +41,7 @@ namespace MercadoYa.AndroidApp.Activities
         AutoCompleteTextView txtSearch;
         MapsHandler MapsHandler;
         IRestDatabase Database;
+        List<string> MappedStores = new List<string>();
 
         //UserProfileEventListener ProfileEventListener;
         SupportMapFragment MapFragment;
@@ -108,8 +110,11 @@ namespace MercadoYa.AndroidApp.Activities
             {
             }
         }
+
         async Task SearchNearbyPlaces()
         {
+            if (MainMap.CameraPosition.Zoom <= 8)
+                return;
             EssentialsLocation CurrentLocation = await GetCurrentLocation();
             var NearbyStores = await Database.GetNearbyStoresAsync(new MyLocationRequest(CurrentLocation.Longitude, CurrentLocation.Latitude));
             foreach(var store in NearbyStores)
@@ -118,12 +123,27 @@ namespace MercadoYa.AndroidApp.Activities
                 Options.SetPosition(new LatLng(store.Latitude, store.Longitude));
                 Options.SetTitle(store.DisplayableName);
 
-                var bmDescriptor = BitmapDescriptorFactory.FromResource(Resource.Drawable.ic_store_mall_directory_128_28856);
+                var bmDescriptor = ResolveStoreIcon();
                 Options.SetIcon(bmDescriptor);
 
                 MainMap.AddMarker(Options);
+                MappedStores.Add(store.Uid);
             }
         }
+
+        private BitmapDescriptor ResolveStoreIcon()
+        {
+            var Zoom = MainMap.CameraPosition.Zoom;
+            switch (Zoom)
+            {
+                case var _ when Zoom < 8: return BitmapDescriptorFactory.FromResource(Resource.Drawable.ic_store_mall_directory_128_64);
+                case var _ when Zoom < 12: return BitmapDescriptorFactory.FromResource(Resource.Drawable.ic_store_mall_directory_128_48);
+                case var _ when Zoom < 15: return BitmapDescriptorFactory.FromResource(Resource.Drawable.ic_store_mall_directory_128_32);
+                case var _ when Zoom < 18: return BitmapDescriptorFactory.FromResource(Resource.Drawable.ic_store_mall_directory_128_24);
+                default: return null;
+            }
+        }
+
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
             //MenuInflater.Inflate(Resource.Menu.nav_menu, menu);
@@ -159,8 +179,18 @@ namespace MercadoYa.AndroidApp.Activities
             MainMap.MyLocationEnabled = true;
             UpdateMapLocation();
             MainMap.CameraIdle += MainMap_CameraIdle;
+            MainMap.CameraChange += MainMap_CameraChange;
             string MapKey = Resources.GetString(Resource.String.maps_key);
             MapsHandler = new MapsHandler(MapKey);
+        }
+
+        void MainMap_CameraChange(object sender, GoogleMap.CameraChangeEventArgs e)
+        {
+            //var currentZoomLevel = MainMap.CameraPosition.Zoom;
+            //if ((int)e.Position.Zoom == (int)currentZoomLevel)
+            //    return;
+
+            //currentZoomLevel = (int)e.Position.Zoom;
         }
 
         async void MainMap_CameraIdle(object sender, EventArgs e)
