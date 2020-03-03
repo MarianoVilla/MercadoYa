@@ -41,7 +41,8 @@ namespace MercadoYa.AndroidApp.Activities
         MapsHandler MapsHandler;
         IRestDatabase Database;
 
-        UserProfileEventListener ProfileEventListener;
+        //UserProfileEventListener ProfileEventListener;
+        SupportMapFragment MapFragment;
 
         static int UPDATE_INTERVAL = 5;
         static int FASTEST_INTERVAL = 5;
@@ -55,9 +56,11 @@ namespace MercadoYa.AndroidApp.Activities
 
             InitControls();
             TestIfGooglePlayServicesIsInstalled();
-            ProfileEventListener = new UserProfileEventListener();
-            var MapFragment = (SupportMapFragment)SupportFragmentManager.FindFragmentById(Resource.Id.map);
-            MapFragment.GetMapAsync(this);
+            //ProfileEventListener = new UserProfileEventListener();
+            MapFragment = (SupportMapFragment)SupportFragmentManager.FindFragmentById(Resource.Id.map);
+
+
+
 
             CheckLocationPermission();
             CreateLocationRequest();
@@ -67,6 +70,11 @@ namespace MercadoYa.AndroidApp.Activities
 
             //Task.Run(() => SearchNearbyPlaces());
 
+        }
+        protected override void OnResume()
+        {
+            base.OnResume();
+            MapFragment.GetMapAsync(this);
         }
         private void ResolveDependencies()
         {
@@ -192,11 +200,11 @@ namespace MercadoYa.AndroidApp.Activities
             LocationCallback = new LocationCallbackHelper();
             LocationCallback.MyLocation += LocationCallback_MyLocation;
         }
-        void LocationCallback_MyLocation(object senter, LocationCallbackHelper.OnLocationCapturedEventArgs e)
+        void LocationCallback_MyLocation(object sender, LocationCallbackHelper.OnLocationCapturedEventArgs e)
         {
             LastLocation = e.Location;
             var Position = new LatLng(LastLocation.Latitude, LastLocation.Longitude);
-            MainMap.AnimateCamera(CameraUpdateFactory.NewLatLngZoom(Position, 17));
+            MainMap?.AnimateCamera(CameraUpdateFactory.NewLatLngZoom(Position, 17));
 
         }
         async void UpdateMapLocation()
@@ -212,7 +220,7 @@ namespace MercadoYa.AndroidApp.Activities
         }
         async Task<EssentialsLocation> GetCurrentLocation()
         {
-            var request = new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(10));
+            var request = new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(60));
             return await Geolocation.GetLocationAsync(request);
         }
         void StartLocationUpdate()
