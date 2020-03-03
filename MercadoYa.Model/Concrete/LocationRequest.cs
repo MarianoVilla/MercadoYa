@@ -12,14 +12,12 @@ namespace MercadoYa.Model.Concrete
         public double Radius { get; set; }
         public int LimitTo { get; set; }
 
-        public LocationRequest()
-        {
-
-        }
+        //Empty constructor to allow Newtonsoft serialization.
+        public LocationRequest() { }
         public LocationRequest(double Longitude, double Latitude, double Radius = 500, int LimitTo = 100)
         {
-            this.Longitude = Longitude;
-            this.Latitude = Latitude;
+            this.Longitude = Math.Round(Longitude, 8);
+            this.Latitude = Math.Round(Latitude, 8);
             this.Radius = Radius;
             this.LimitTo = LimitTo;
         }
