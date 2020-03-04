@@ -12,4 +12,8 @@ namespace MercadoYa.Rest.Mock
         //public static readonly string CryptoDevKey = CryptoUtil.RandomString(32);
         public static readonly string CryptoDevKey = "pei8HrGfM26FEAMVT4JVvfI8zSjBXLSF";
     }
+    public interface A
+    {
+        string SomeMember() => "Default";
+    }
 }
