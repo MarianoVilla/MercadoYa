@@ -81,7 +81,7 @@ namespace MercadoYa.AndroidApp.Activities
 
         private void TaskCompletionListener_Success(object sender, IAuthResult Result)
         {
-            var User = Result.User as FullAppUser;
+            var User = Result.User as FullCustomerUser;
             UserUtil.SaveIfValid(User.Email, User.Password);
             StartActivity(typeof(MainActivity));
             Finish();
