@@ -38,7 +38,7 @@ namespace MercadoYa.Rest.Controllers
         }
         [Route("nearbystores")]
         [HttpPost]
-        public IActionResult GetNearbyStores([FromBody] FilteredLocationRequest LocRequest, NestedTagsPolicy NestedTags = NestedTagsPolicy.None)
+        public IActionResult GetNearbyStores([FromBody] LocationRequest LocRequest, NestedTagsPolicy NestedTags = NestedTagsPolicy.None)
         {
 
             if (IsUnauthorized())
