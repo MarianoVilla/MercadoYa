@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using MercadoYa.Interfaces;
+﻿using MercadoYa.Interfaces;
 using MercadoYa.Lib.Util;
 using MercadoYa.Model.Concrete;
+using MercadoYa.Model.Enums;
 using MercadoYa.Rest.Mock;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
 
 namespace MercadoYa.Rest.Controllers
 {
@@ -25,9 +23,9 @@ namespace MercadoYa.Rest.Controllers
             this.Database = Database;
         }
         [Route("test")]
-        public IActionResult Test() 
-        { 
-            return Ok(); 
+        public IActionResult Test()
+        {
+            return Ok();
         }
         [Route("users")]
         public IActionResult GetUserInfo(string Uid)
@@ -40,19 +38,40 @@ namespace MercadoYa.Rest.Controllers
         }
         [Route("nearbystores")]
         [HttpPost]
-        public IActionResult GetNearbyStores([FromBody] LocationRequest LocRequest)
+        public IActionResult GetNearbyStores([FromBody] FilteredLocationRequest LocRequest, NestedTagsPolicy NestedTags = NestedTagsPolicy.None)
         {
+
             if (IsUnauthorized())
                 return Unauthorized();
 
-            IEnumerable<IAppUser> Stores = Database.GetNearbyStores(LocRequest);
+            var Stores = (IEnumerable<StoreUser>)Database.GetNearbyStores(LocRequest);
+
+            SwitchNestedIncludeType(Stores, NestedTags);
+
             return new JsonResult(Stores);
         }
-
-
+        void SwitchNestedIncludeType(IEnumerable<StoreUser> Stores, NestedTagsPolicy NestedPolicy)
+        {
+            switch (NestedPolicy)
+            {
+                case NestedTagsPolicy.All: LoadAllTagsInStores(Stores); break;
+                case NestedTagsPolicy.Foods: Stores.LoadFoods(Database); break;
+                case NestedTagsPolicy.Tags: Stores.LoadTags(Database); break;
+                case NestedTagsPolicy.None:
+                default: break;
+            }
+        }
+        void LoadAllTagsInStores(IEnumerable<StoreUser> Stores)
+        {
+            Stores.LoadFoods(Database);
+            Stores.LoadTags(Database);
+        }
         bool IsUnauthorized()
         {
-            var Timestamp = Request.Cookies["timestamp"] as string;
+#if DEBUG
+            return false;
+#endif
+            string Timestamp = Request.Cookies["timestamp"] as string;
             return !ValidTimestamp(Timestamp);
         }
         bool ValidTimestamp(string Timestamp)

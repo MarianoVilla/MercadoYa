@@ -5,11 +5,10 @@ using System.Text;
 
 namespace MercadoYa.Model.Concrete
 {
-    public class Food : ITag
+    public class Tag : ITag
     {
-        public int Id { get; set; }
         public string TagName { get; set; }
         public string TagDescription { get; set; }
-        public string Region { get; set; }
+        public int Id { get; set; }
     }
 }

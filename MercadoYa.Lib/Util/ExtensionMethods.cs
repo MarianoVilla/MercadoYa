@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MercadoYa.Interfaces;
+using MercadoYa.Model.Concrete;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -23,5 +25,20 @@ namespace MercadoYa.Lib.Util
         {
             return Value.Length >= N;
         }
+        public static void LoadTags(this IEnumerable<IAppUser> Users, IDatabase Database)
+        {
+            foreach (var u in Users)
+            {
+                u.Tags = Database.GetTagsForUser(u);
+            }
+        }
+        public static  void LoadFoods(this IEnumerable<StoreUser> Stores, IDatabase Database)
+        {
+            foreach (var s in Stores)
+            {
+                s.Foods = (IEnumerable<Food>)Database.GetFoodTagsForUser(s);
+            }
+        }
     }
+
 }

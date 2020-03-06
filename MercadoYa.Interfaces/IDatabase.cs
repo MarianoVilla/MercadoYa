@@ -14,5 +14,9 @@ namespace MercadoYa.Interfaces
         IAppUser GetUserByEmail(string Email);
         IUserCredentials GetUserCredentials(string Email);
         IEnumerable<IAppUser> GetNearbyStores(ILocationRequest Request);
+        //IEnumerable<IAppUser> GetNearbyStoresIncludingTags(ILocationRequest Request);
+        //IEnumerable<IAppUser> GetNearbyStoresIncludingFoods(ILocationRequest Request);
+        IEnumerable<ITag> GetTagsForUser(IAppUser User);
+        IEnumerable<ITag> GetFoodTagsForUser(IAppUser User);
     }
 }

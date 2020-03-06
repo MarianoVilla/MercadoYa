@@ -5,18 +5,18 @@ using System.Text;
 
 namespace MercadoYa.Model.Concrete
 {
-    public class LocationRequest : ILocationRequest
+    public class FilteredLocationRequest : ILocationRequest
     {
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public double Radius { get; set; }
         public int LimitTo { get; set; }
 
-        public LocationRequest()
+        public FilteredLocationRequest()
         {
 
         }
-        public LocationRequest(double Longitude, double Latitude, double Radius = 500, int LimitTo = 100)
+        public FilteredLocationRequest(double Longitude, double Latitude, double Radius = 500, int LimitTo = 100)
         {
             this.Longitude = Longitude;
             this.Latitude = Latitude;

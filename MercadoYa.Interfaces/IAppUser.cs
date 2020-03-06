@@ -15,5 +15,7 @@ namespace MercadoYa.Interfaces
         string ProfilePic { get; set; }
         string Phone { get; set; }
         string UserType { get; set; }
+        IEnumerable<ITag> Tags { get; set; }
+
     }
 }

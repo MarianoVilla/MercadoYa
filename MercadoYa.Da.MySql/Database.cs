@@ -1,14 +1,12 @@
-﻿using MercadoYa.Da.MySql.QueryEngine;
+﻿using Dapper;
+using MercadoYa.Da.MySql.QueryEngine;
 using MercadoYa.Interfaces;
+using MercadoYa.Model.Concrete;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using Dapper;
 using System.Data;
-using MySql.Data.MySqlClient;
-using MercadoYa.Model.Concrete;
 using System.Linq;
-using MercadoYa.Lib.Util;
 
 
 namespace MercadoYa.Da.MySql
@@ -30,7 +28,7 @@ namespace MercadoYa.Da.MySql
             Parameters.AddByReflection(Credentials);
             Parameters.Add("Uid", dbType: DbType.String, direction: ParameterDirection.Output);
 
-            var Result = conn.Execute(Stored, Parameters, commandType: CommandType.StoredProcedure);
+            int Result = conn.Execute(Stored, Parameters, commandType: CommandType.StoredProcedure);
             return Parameters.Get<string>("Uid");
         }
 
@@ -41,7 +39,7 @@ namespace MercadoYa.Da.MySql
         IAppUser InnerGetUser(string Uid, string Query)
         {
             using IDbConnection conn = new MySqlConnection(ConnectionString);
-            return conn.Query<AppUser>(Query, new {  Uid }).FirstOrDefault();
+            return conn.Query<AppUser>(Query, new { Uid }).FirstOrDefault();
         }
 
         public IAppUser GetUserByEmail(string Email)
@@ -58,18 +56,47 @@ namespace MercadoYa.Da.MySql
             string Query = QueryCreator.SelectUserCredentials(Email);
 
             using IDbConnection conn = new MySqlConnection(ConnectionString);
-            var Result = conn.Query<UserCredentials>(Query, new { Email });
+            IEnumerable<UserCredentials> Result = conn.Query<UserCredentials>(Query, new { Email });
             return Result.FirstOrDefault();
         }
-
+        //TODO: this should return users and for each user, ALL of its tags!
         public IEnumerable<IAppUser> GetNearbyStores(ILocationRequest Request)
         {
             using IDbConnection conn = new MySqlConnection(ConnectionString);
             var Parameters = new DynamicParameters();
             Parameters.AddByReflection(Request);
 
-            return conn.Query<AppUser>(Const.SpGetNearbyStores, Parameters, commandType: CommandType.StoredProcedure);
+            return conn.Query<StoreUser>(Const.SpGetNearbyStores, Parameters, commandType: CommandType.StoredProcedure);
+        }
+        public IEnumerable<IAppUser> GetNearbyStoresIncludingTags(ILocationRequest Request)
+        {
+            IEnumerable<IAppUser> Stores = GetNearbyStores(Request);
+            foreach(var s in Stores)
+            {
+                s.Tags = GetTagsForUser(s);
+            }
+            return Stores;
+        }
+        public IEnumerable<IAppUser> GetNearbyStoresIncludingFoods(ILocationRequest Request)
+        {
+            var Stores = (IEnumerable<StoreUser>)GetNearbyStores(Request);
+            foreach (var s in Stores)
+            {
+                s.Foods = (IEnumerable<Food>)GetFoodTagsForUser(s);
+            }
+            return Stores;
+        }
+        public IEnumerable<ITag> GetTagsForUser(IAppUser User)
+        {
+            using IDbConnection conn = new MySqlConnection(ConnectionString);
 
+            return conn.Query<Tag>(Const.SpGetTags, new { User.Uid }, commandType: CommandType.StoredProcedure);
+        }
+        public IEnumerable<ITag> GetFoodTagsForUser(IAppUser User)
+        {
+            using IDbConnection conn = new MySqlConnection(ConnectionString);
+
+            return conn.Query<Food>(Const.SpGetFoods, new { User.Uid }, commandType: CommandType.StoredProcedure);
         }
     }
 }

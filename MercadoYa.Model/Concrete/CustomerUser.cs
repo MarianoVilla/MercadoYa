@@ -16,5 +16,6 @@ namespace MercadoYa.Model.Concrete
         public string Phone { get; set; }
         public string UserType { get; set; }
         public string DisplayableName { get; set; }
+        public IEnumerable<ITag> Tags { get; set; }
     }
 }
