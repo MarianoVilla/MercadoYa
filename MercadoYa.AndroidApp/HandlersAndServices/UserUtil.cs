@@ -1,37 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
+﻿using Android.App;
 using Android.Content;
-using Android.OS;
-using Android.Runtime;
+using Android.Support.Design.Widget;
 using Android.Views;
-using Android.Widget;
+using MercadoYa.AndroidApp.Activities;
+using MercadoYa.AndroidApp.HandlersAndServices;
 using MercadoYa.Interfaces;
 using MercadoYa.Lib.Util;
 using MercadoYa.Model.Concrete;
+using System.Collections.Generic;
 using NetDebug = System.Diagnostics.Debug;
 
 namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
 {
     public class UserUtil
     {
-        static readonly IValidator Validator = new Validator();
-        public static ISharedPreferences GetUserInfo(FileCreationMode CreationMode = FileCreationMode.Private)
-        {
-            return Application.Context.GetSharedPreferences("userinfo", CreationMode);
-        }
-        public static ISharedPreferencesEditor GetUserInfoEditor()
-        {
-            ISharedPreferences Editor = GetUserInfo();
-            return Editor.Edit();
-        }
-        public static string GetKey()
-        {
-            return GetUserInfo().GetString("Key", "");
-        }
+        static readonly IValidator Validator = App.DiContainer.Resolve<IValidator>();
+        static string UserInfoName = "userinfo";
+
+        public static ISharedPreferences GetUserInfo(FileCreationMode CreationMode = FileCreationMode.Private) 
+            => LocalDatabase.GetPreferences(UserInfoName, CreationMode);
+        public static ISharedPreferencesEditor GetUserInfoEditor(FileCreationMode CreationMode = FileCreationMode.Private) 
+            => LocalDatabase.GetPreferencesEditor(UserInfoName, CreationMode);
+        public static string GetKey() => GetUserInfo().GetString("Key", "");
         public static void SaveKey(string Key)
         {
             ISharedPreferencesEditor Editor = GetUserInfoEditor();
@@ -65,10 +55,10 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
         {
             ISharedPreferences Editor = GetUserInfo();
 
-            var Email = Editor.GetString(nameof(FullAppUser.Email), null);
-            var Password = Editor.GetString(nameof(FullAppUser.Password), null);
-            var Phone = Editor.GetString(nameof(FullAppUser.Phone), null);
-            var Name = Editor.GetString(nameof(FullAppUser.Username), null);
+            string Email = Editor.GetString(nameof(FullAppUser.Email), null);
+            string Password = Editor.GetString(nameof(FullAppUser.Password), null);
+            string Phone = Editor.GetString(nameof(FullAppUser.Phone), null);
+            string Name = Editor.GetString(nameof(FullAppUser.Username), null);
 
             List<string> DecryptedUser = CryptoUtil.TryDecryptStrings(Key: Key, DefaultTo: "", Email, Password, Phone, Name);
 
@@ -80,30 +70,42 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
                 Username = DecryptedUser[3]
             };
         }
-        public static bool IsValidUser(string Email, string Password, string Phone = null, string Name = null)
+        public static bool IsValidUser(string Email, string Password, string Phone = null, string Username = null)
         {
             return Validator.IsValidEmail(Email) && Validator.IsValidPhone(Phone)
-                && Validator.IsValidPassword(Password) && Validator.IsValidName(Name);
+                && Validator.IsValidPassword(Password) && Validator.IsValidName(Username);
         }
-        public static string ValidateUser(string Email, string Password, string Phone = null, string Name = null)
+        public static bool IsValidUser(IFullAppUser User) => IsValidUser(User.Email, User.Password, User.Phone, User.Username);
+        public static string ValidateUser(string Email, string Password, string Phone = null, string Username = null)
         {
             string ValidationMessage = string.Empty;
             ValidationMessage += Validator.ValidateEmail(Email);
             ValidationMessage += Validator.ValidatePassword(Password);
             ValidationMessage += Phone == null ? string.Empty : Validator.ValidatePhone(Phone);
-            ValidationMessage += Name == null ? string.Empty : Validator.ValidateName(Name);
+            ValidationMessage += Username == null ? string.Empty : Validator.ValidateName(Username);
             return ValidationMessage;
         }
-        public static bool IsValidUser(IFullAppUser User)
+        public static string ValidateUser(IFullAppUser User) => ValidateUser(User.Email, User.Password, User.Phone, User.Username);
+
+        public static bool PromptIfInvalid(View RootView, string Email, string Password, string Phone = null, string Username = null)
         {
-            return IsValidUser(User.Email, User.Password, User.Phone, User.Username);
+            string ValidationError = ValidateUser(Email, Password);
+            if (ValidationError != string.Empty)
+            {
+                Snackbar.Make(RootView, ValidationError, Snackbar.LengthShort).Show();
+                return true;
+            }
+            return false;
         }
-        public static Java.Util.HashMap HashUser(string Email, string Phone, string Name)
+        public static bool PromptIfInvalid(View RootView, IFullAppUser User)
+            => PromptIfInvalid(RootView, User.Email, User.Password, User.Phone, User.Username);
+
+        public static Java.Util.HashMap HashUser(string Email, string Phone, string Username)
         {
             var UserMap = new Java.Util.HashMap();
             UserMap.Put(nameof(Email), Email);
             UserMap.Put(nameof(Phone), Phone);
-            UserMap.Put(nameof(Name), Name);
+            UserMap.Put(nameof(Username), Username);
             return UserMap;
         }
     }

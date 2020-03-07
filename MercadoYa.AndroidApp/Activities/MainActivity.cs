@@ -1,29 +1,28 @@
-﻿using System;
-using System.Threading.Tasks;
-using Android;
+﻿using Android;
 using Android.App;
 using Android.Content.PM;
+using Android.Gms.Common;
 using Android.Gms.Location;
 using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
-using Android.Locations;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.Design.Widget;
-using Android.Support.V4.App;
 using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
-using Firebase.Database;
+using MercadoYa.AndroidApp.Fragments;
 using MercadoYa.AndroidApp.Handlers_nd_Helpers;
+using MercadoYa.AndroidApp.HandlersAndServices;
 using MercadoYa.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 //using MercadoYa.Model.Concrete;
 using Xamarin.Essentials;
-using MyLocationRequest = MercadoYa.Model.Concrete.LocationRequest;
 using EssentialsLocation = Xamarin.Essentials.Location;
-using Android.Gms.Common;
-using MercadoYa.AndroidApp.Fragments;
-using System.Collections.Generic;
+using MyLocationRequest = MercadoYa.Model.Concrete.LocationRequest;
 
 namespace MercadoYa.AndroidApp.Activities
 {
@@ -70,8 +69,6 @@ namespace MercadoYa.AndroidApp.Activities
             //ProfileEventListener.Create();
             ResolveDependencies();
 
-            //Task.Run(() => SearchNearbyPlaces());
-
         }
         protected override void OnResume()
         {
@@ -82,32 +79,44 @@ namespace MercadoYa.AndroidApp.Activities
         {
             Database = App.DiContainer.Resolve<IRestDatabase>();
         }
-        string[] FoodSuggestions;
+        List<string> FoodSuggestions;
+        ArrayAdapter<String> FoodAdapter;
         private void InitControls()
         {
             this.txtSearch = FindViewById<AutoCompleteTextView>(Resource.Id.txtSearch);
 
             txtSearch.Click += TxtSearch_Click;
             txtSearch.TextChanged += TxtSearch_TextChanged;
-            //txtSearch.Adapter = new ArrayAdapter<String> (this, Resource.Layout.list_item, FoodSuggestions);
+            txtSearch.EditorAction += TxtSearch_EditorAction;
+            UpdateFoodSuggestions();
+            txtSearch.Adapter = FoodAdapter = new ArrayAdapter<String>(this, Resource.Layout.list_item, FoodSuggestions);
+        }
 
+        private void TxtSearch_EditorAction(object sender, TextView.EditorActionEventArgs e)
+        {
+            FoodAdapter.Add(txtSearch.Text);
+            FoodSuggestions.Add(txtSearch.Text);
+            LocalDatabase.SaveFoodSearchHistory(FoodSuggestions);
         }
 
         private void TxtSearch_TextChanged(object sender, Android.Text.TextChangedEventArgs e)
         {
-            GetSuggestions();
         }
 
-        //TODO: save recent searches.
         private void TxtSearch_Click(object sender, EventArgs e)
         {
+            txtSearch.ShowDropDown();
             GetSuggestions();
         }
-
+        void UpdateFoodSuggestions()
+        {
+            FoodSuggestions = LocalDatabase.GetFoodSearchHistory().ToList();
+        }
         private void GetSuggestions()
         {
             if (string.IsNullOrWhiteSpace(txtSearch.Text))
             {
+
             }
         }
 
@@ -116,14 +125,14 @@ namespace MercadoYa.AndroidApp.Activities
             if (MainMap.CameraPosition.Zoom <= 8)
                 return;
             EssentialsLocation CurrentLocation = await GetCurrentLocation();
-            var NearbyStores = await Database.GetNearbyStoresAsync(new MyLocationRequest(CurrentLocation.Longitude, CurrentLocation.Latitude));
-            foreach(var store in NearbyStores)
+            IEnumerable<IAppUser> NearbyStores = await Database.GetNearbyStoresAsync(new MyLocationRequest(CurrentLocation.Longitude, CurrentLocation.Latitude));
+            foreach (IAppUser store in NearbyStores)
             {
                 var Options = new MarkerOptions();
                 Options.SetPosition(new LatLng(store.Latitude, store.Longitude));
                 Options.SetTitle(store.DisplayableName);
 
-                var bmDescriptor = ResolveStoreIcon();
+                BitmapDescriptor bmDescriptor = ResolveStoreIcon();
                 Options.SetIcon(bmDescriptor);
 
                 MainMap.AddMarker(Options);
@@ -133,7 +142,7 @@ namespace MercadoYa.AndroidApp.Activities
 
         private BitmapDescriptor ResolveStoreIcon()
         {
-            var Zoom = MainMap.CameraPosition.Zoom;
+            float Zoom = MainMap.CameraPosition.Zoom;
             switch (Zoom)
             {
                 case var _ when Zoom < 8: return BitmapDescriptorFactory.FromResource(Resource.Drawable.ic_store_mall_directory_128_64);
@@ -262,7 +271,7 @@ namespace MercadoYa.AndroidApp.Activities
         public static readonly int RC_INSTALL_GOOGLE_PLAY_SERVICES = 1000;
         bool TestIfGooglePlayServicesIsInstalled()
         {
-            var queryResult = GoogleApiAvailability.Instance.IsGooglePlayServicesAvailable(this);
+            int queryResult = GoogleApiAvailability.Instance.IsGooglePlayServicesAvailable(this);
             if (queryResult == ConnectionResult.Success)
             {
                 return true;
@@ -270,8 +279,8 @@ namespace MercadoYa.AndroidApp.Activities
 
             if (GoogleApiAvailability.Instance.IsUserResolvableError(queryResult))
             {
-                var errorString = GoogleApiAvailability.Instance.GetErrorString(queryResult);
-                var errorDialog = GoogleApiAvailability.Instance.GetErrorDialog(this, queryResult, RC_INSTALL_GOOGLE_PLAY_SERVICES);
+                string errorString = GoogleApiAvailability.Instance.GetErrorString(queryResult);
+                Dialog errorDialog = GoogleApiAvailability.Instance.GetErrorDialog(this, queryResult, RC_INSTALL_GOOGLE_PLAY_SERVICES);
                 var dialogFrag = new MyErrorDialogFragment(errorDialog);
 
                 dialogFrag.Show(FragmentManager, "GooglePlayServicesDialog");

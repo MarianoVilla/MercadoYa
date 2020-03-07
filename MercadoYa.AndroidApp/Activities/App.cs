@@ -13,6 +13,7 @@ using Android.Views;
 using Android.Widget;
 using MercadoYa.AndroidApp.Handlers_nd_Helpers;
 using MercadoYa.Interfaces;
+using MercadoYa.Lib.Util;
 using MercadoYa.Model;
 using TinyIoC;
 
@@ -42,6 +43,7 @@ namespace MercadoYa.AndroidApp.Activities
             DiContainer = new TinyIoCContainer();
             DiContainer.Register<IObservableClientAuthenticator, RestAuth>().AsMultiInstance();
             DiContainer.Register<IRestDatabase, RestDatabase>();
+            DiContainer.Register<IValidator, Validator>();
         }
         static void InitHttpClient()
         {

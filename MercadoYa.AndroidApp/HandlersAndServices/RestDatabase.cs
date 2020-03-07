@@ -22,7 +22,7 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
         public async Task<IEnumerable<IAppUser>> GetNearbyStoresAsync(ILocationRequest Request)
         {
             IEnumerable<IAppUser> Stores = new List<IAppUser>();
-            using HttpResponseMessage Res = await Const.GlobalHttpClient.PostAsJsonAsync("Database/nearbystores", Request);
+            using HttpResponseMessage Res = await Const.GlobalHttpClient.PostAsJsonAsync("Database/nearbystores?NestedTags=Foods", Request);
             if (Res.IsSuccessStatusCode)
             {
                 using HttpContent content = Res.Content;

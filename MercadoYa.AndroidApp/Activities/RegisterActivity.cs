@@ -76,15 +76,10 @@ namespace MercadoYa.AndroidApp.Activities
             Customer.Email = txtEmail.EditText.Text;
             Customer.Password = txtPassword.EditText.Text;
 
-            if (InvalidInput())
+            if (UserUtil.PromptIfInvalid(RootView, Customer))
                 return;
 
             RegisterUser();
-        }
-
-        bool InvalidInput()
-        {
-            return !UserUtil.IsValidUser(Customer);
         }
         void RegisterUser()
         {

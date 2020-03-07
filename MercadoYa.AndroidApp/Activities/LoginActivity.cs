@@ -64,7 +64,7 @@ namespace MercadoYa.AndroidApp.Activities
             Email = txtEmail.EditText.Text;
             Password = txtPassword.EditText.Text;
 
-            if (InvalidInput())
+            if (UserUtil.PromptIfInvalid(RootView, Email, Password))
                 return;
 
             var TaskCompletionListener = new AuthCompletionListener(TaskCompletionListener_Success, TaskCompletionListener_Failure);
@@ -85,17 +85,6 @@ namespace MercadoYa.AndroidApp.Activities
             UserUtil.SaveIfValid(User.Email, User.Password);
             StartActivity(typeof(MainActivity));
             Finish();
-        }
-
-        bool InvalidInput()
-        {
-            string ValidationError = UserUtil.ValidateUser(Email, Password);
-            if (ValidationError != string.Empty)
-            {
-                Snackbar.Make(RootView, ValidationError, Snackbar.LengthShort).Show();
-                return true;
-            }
-            return false;
         }
 
         private void TxtGoToRegister_Click(object sender, EventArgs e)
