@@ -6,41 +6,54 @@ using System.Text;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
+using Android.Gms.Maps;
+using Android.Gms.Maps.Model;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Firebase.Database;
+using MercadoYa.Interfaces;
 using Xamarin.Essentials;
 
 namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
 {
     public static class ExtensionMethods
     {
-        public static DatabaseReference GetStoreUser(this FirebaseDatabase Database, string Uid)
+        public static IEnumerable<Model.Concrete.StoreUser> FilteredByFood(this IEnumerable<Model.Concrete.StoreUser> Stores, string FilterText)
         {
-            return Database.GetReference($"users/storeusers/{Uid}");
+            if (string.IsNullOrWhiteSpace(FilterText))
+                return Stores;
+            return Stores.Where(x => x.Foods.Any(y => y.TagName.Trim().ToLower() == FilterText.Trim().ToLower()));
         }
-        //public static DatabaseReference GetNearStoreUsers(this FirebaseDatabase Database, Location Loc)
+        //public static void DrawInMap(this IAppUser User, GoogleMap Map, BitmapDescriptor Icon)
         //{
-        //    var StoreUsers = Database.GetReference($"users/storeusers");
-        //    var OrderedByLocation = StoreUsers.OrderByChild("location");
-        //    var OrderedByLatitude = OrderedByLocation.OrderByChild("latitude");
-        //    var StartAt = OrderedByLatitude.StartAt(Loc.Latitude - .1);
-        //    var LimitTo = StartAt.LimitToFirst(1).Ref;
-        //    return Database.GetReference($"users/storeusers").OrderByChild("location").OrderByChild("latitude").StartAt(Loc.Latitude - .1).LimitToFirst(1).Ref;
+        //    var Options = new MarkerOptions();
+        //    Options.SetPosition(new LatLng(User.Latitude, User.Longitude));
+        //    Options.SetTitle(User.DisplayableName);
+        //    Options.SetIcon(Icon);
+        //    Map.AddMarker(Options);
         //}
-        public static DatabaseReference GetClientUser(this FirebaseDatabase Database, string Uid)
-        {
-            return Database.GetReference($"users/clientusers/{Uid}");
-        }
-        public static DatabaseReference GetFoods(this FirebaseDatabase Database, string Name = null)
-        {
-            return string.IsNullOrWhiteSpace(Name) ? Database.GetReference($"foods") : Database.GetReference($"foods/{Name.ToLower()}");
-        }
-        //public async static Task<T> ReadAsObjectAsync<T>(this HttpContent TheContent)
+        //public static void DrawInMap(this IEnumerable<IAppUser> Users, GoogleMap Map, BitmapDescriptor Icon)
         //{
-        //    return await TheContent.Rea
+        //    foreach(var User in Users)
+        //    {
+        //        User.DrawInMap(Map, Icon);
+        //    }
+        //}
+        //public static void DrawInMap(this IEnumerable<IAppUser> Users, GoogleMap Map, float Hue = BitmapDescriptorFactory.HueBlue)
+        //{
+        //    foreach (var User in Users)
+        //    {
+        //        User.DrawInMap(Map, BitmapDescriptorFactory.DefaultMarker(Hue));
+        //    }
+        //}
+        //public static void DrawMarker(this GoogleMap Map, LatLng Position, BitmapDescriptor Icon = null)
+        //{
+        //    var Options = new MarkerOptions();
+        //    Options.SetPosition(Position);
+        //    Options.SetIcon(Icon ?? BitmapDescriptorFactory.DefaultMarker(BitmapDescriptorFactory.HueGreen));
+        //    Map.AddMarker(Options);
         //}
 
     }

@@ -75,8 +75,8 @@
     <Compile Include="HandlersAndServices\FirebaseHandler.cs" />
     <Compile Include="HandlersAndServices\FoodUtil.cs" />
     <Compile Include="HandlersAndServices\LocalDatabase.cs" />
-    <Compile Include="HandlersAndServices\LocationCallbackHelper.cs" />
-    <Compile Include="HandlersAndServices\MapsHandler.cs" />
+    <Compile Include="HandlersAndServices\LocationCallbacker.cs" />
+    <Compile Include="HandlersAndServices\MapHandler.cs" />
     <Compile Include="HandlersAndServices\RestAuth.cs" />
     <Compile Include="HandlersAndServices\RestDatabase.cs" />
     <Compile Include="HandlersAndServices\AuthCompletionListener.cs" />
@@ -276,6 +276,29 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\ic_store_mall_directory_128_24.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_current_location_32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_current_location_48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_current_location_64.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_current_location_72.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_current_location_96.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\round_button.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ic_cross_81577_32.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

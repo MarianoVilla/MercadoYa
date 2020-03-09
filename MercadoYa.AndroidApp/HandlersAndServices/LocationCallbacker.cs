@@ -14,7 +14,7 @@ using Android.Widget;
 
 namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
 {
-    public class LocationCallbackHelper : LocationCallback
+    public class LocationCallbacker : LocationCallback
     {
         public EventHandler<OnLocationCapturedEventArgs> MyLocation;
         public class OnLocationCapturedEventArgs : EventArgs

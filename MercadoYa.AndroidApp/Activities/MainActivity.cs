@@ -1,5 +1,6 @@
 ﻿using Android;
 using Android.App;
+using Android.Content;
 using Android.Content.PM;
 using Android.Gms.Common;
 using Android.Gms.Location;
@@ -10,44 +11,37 @@ using Android.Runtime;
 using Android.Support.Design.Widget;
 using Android.Support.V7.App;
 using Android.Views;
+using Android.Views.InputMethods;
 using Android.Widget;
 using MercadoYa.AndroidApp.Fragments;
 using MercadoYa.AndroidApp.Handlers_nd_Helpers;
 using MercadoYa.AndroidApp.HandlersAndServices;
 using MercadoYa.Interfaces;
+using MercadoYa.Lib.Comparers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-//using MercadoYa.Model.Concrete;
 using Xamarin.Essentials;
+using static MercadoYa.AndroidApp.Handlers_nd_Helpers.LocationCallbacker;
 using EssentialsLocation = Xamarin.Essentials.Location;
 using MyLocationRequest = MercadoYa.Model.Concrete.LocationRequest;
 
 namespace MercadoYa.AndroidApp.Activities
 {
-    //TODO: refactor the fuck out of this.
     [Activity(Label = "@string/app_name", Theme = "@style/MercadoYa.Theme", MainLauncher = false)]
     public class MainActivity : AppCompatActivity, IOnMapReadyCallback
     {
         GoogleMap MainMap;
         readonly string[] PermissionGroupLocation = { Manifest.Permission.AccessCoarseLocation, Manifest.Permission.AccessFineLocation };
         const int LocationRequestId = 0;
-        LocationRequest LocRequest;
-        FusedLocationProviderClient LocationClient;
-        Android.Locations.Location LastLocation;
-        LocationCallbackHelper LocationCallback;
         AutoCompleteTextView txtSearch;
-        MapsHandler MapsHandler;
+        MapHandler MapsHandler;
         IRestDatabase Database;
-        List<string> MappedStores = new List<string>();
-
-        //UserProfileEventListener ProfileEventListener;
         SupportMapFragment MapFragment;
-
-        static int UPDATE_INTERVAL = 5;
-        static int FASTEST_INTERVAL = 5;
-        static int DISPLACEMENT = 3;
+        FloatingActionButton fabCenter;
+        Button btnSearchHere;
+        FusedLocationProviderClient LocationProviderClient;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -56,103 +50,181 @@ namespace MercadoYa.AndroidApp.Activities
             SetContentView(Resource.Layout.activity_main);
 
             InitControls();
-            TestIfGooglePlayServicesIsInstalled();
-            //ProfileEventListener = new UserProfileEventListener();
             MapFragment = (SupportMapFragment)SupportFragmentManager.FindFragmentById(Resource.Id.map);
-
-
-
+            MapFragment.GetMapAsync(this);
 
             CheckLocationPermission();
-            CreateLocationRequest();
-            StartLocationUpdate();
-            //ProfileEventListener.Create();
             ResolveDependencies();
+            SetupLocationProvider();
 
         }
-        protected override void OnResume()
+
+
+        private async Task SetupLocationProvider()
         {
-            base.OnResume();
-            MapFragment.GetMapAsync(this);
+            var LocRequest = new LocationRequest();
+            LocRequest.SetInterval(1000);
+            LocRequest.SetFastestInterval(10 * 1000);
+            LocRequest.SetSmallestDisplacement(100);
+            LocRequest.SetPriority(LocationRequest.PriorityHighAccuracy);
+            LocationProviderClient = LocationServices.GetFusedLocationProviderClient(this);
+            var locationCallback = new LocationCallbacker();
+            locationCallback.MyLocation = LocationCallback_LocationResult;
+            await LocationProviderClient.RequestLocationUpdatesAsync(LocRequest, locationCallback);
         }
+
+        private async void LocationCallback_LocationResult(object sender, OnLocationCapturedEventArgs e)
+        {
+            MapsHandler.UpdateCachedLocation(e.Location);
+            await SearchNearbyStores();
+        }
+
         private void ResolveDependencies()
         {
             Database = App.DiContainer.Resolve<IRestDatabase>();
         }
-        List<string> FoodSuggestions;
-        ArrayAdapter<String> FoodAdapter;
+
+        ICollection<string> FoodSuggestions;
+        ArrayAdapter<string> FoodAdapter;
         private void InitControls()
         {
+            this.fabCenter = FindViewById<FloatingActionButton>(Resource.Id.fabCenter);
+            this.btnSearchHere = FindViewById<Button>(Resource.Id.btnSearchHere);
             this.txtSearch = FindViewById<AutoCompleteTextView>(Resource.Id.txtSearch);
 
-            txtSearch.Click += TxtSearch_Click;
-            txtSearch.TextChanged += TxtSearch_TextChanged;
-            txtSearch.EditorAction += TxtSearch_EditorAction;
-            UpdateFoodSuggestions();
-            txtSearch.Adapter = FoodAdapter = new ArrayAdapter<String>(this, Resource.Layout.list_item, FoodSuggestions);
-        }
+            InitTxtSearch();
 
-        private void TxtSearch_EditorAction(object sender, TextView.EditorActionEventArgs e)
+            fabCenter.Click += FabCenter_Click;
+            btnSearchHere.Click += BtnSearchHere_Click;
+
+        }
+        private async void BtnSearchHere_Click(object sender, EventArgs e)
         {
-            FoodAdapter.Add(txtSearch.Text);
-            FoodSuggestions.Add(txtSearch.Text);
-            LocalDatabase.SaveFoodSearchHistory(FoodSuggestions);
+            await SearchNearbyStores(MainMap.Projection.VisibleRegion.LatLngBounds.Center);
+            ApplySearchFilter(NearbyStores);
         }
 
+        #region InitTxtSearch.
+        void InitTxtSearch()
+        {
+            txtSearch.Click += TxtSearch_Click;
+            txtSearch.EditorAction += TxtSearch_EditorAction;
+            txtSearch.Touch += TxtSearch_Touch;
+            txtSearch.TextChanged += TxtSearch_TextChanged;
+            FetchFoodSuggestions();
+            txtSearch.Adapter = FoodAdapter = new ArrayAdapter<string>(this, Resource.Layout.list_item, FoodSuggestions.ToArray());
+        }
         private void TxtSearch_TextChanged(object sender, Android.Text.TextChangedEventArgs e)
         {
+            if (txtSearch.Text.Length > 0)
+            {
+                txtSearch.SetCompoundDrawablesWithIntrinsicBounds(0, 0, Resource.Drawable.ic_cross_81577_32, 0);
+            }
+            else
+            {
+                txtSearch.SetCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+            }
+            txtSearch.ShowDropDown();
+
+        }
+        private void TxtSearch_Touch(object sender, View.TouchEventArgs e)
+        {
+            var rightDrawable = txtSearch.GetCompoundDrawables()[2];
+            if (rightDrawable == null || e.Event.Action != MotionEventActions.Up)
+            {
+                e.Handled = false;
+                return;
+            }
+            if (e.Event.GetX() >= txtSearch.Width - txtSearch.TotalPaddingRight)
+            {
+                txtSearch.Text = string.Empty;
+                e.Handled = true;
+            }
+            (sender as AutoCompleteTextView)?.OnTouchEvent(e.Event);
+        }
+        private void TxtSearch_EditorAction(object sender, TextView.EditorActionEventArgs e)
+        {
+            UpdateFoodSuggestionsStorage();
+            //TODO: replace this minimalistic extension with an actual search/suggestions engine.
+            ApplySearchFilter(NearbyStores);
+            HideKeyboar(this);
+            ActiveSearch = true;
+        }
+        void ApplySearchFilter(IEnumerable<Model.Concrete.StoreUser> StoresToFilter)
+        {
+            IEnumerable<Model.Concrete.StoreUser> FilteredByFood = StoresToFilter.FilteredByFood(txtSearch.Text);
+            MapsHandler.Draw(FilteredByFood.Select(x => new LatLng(x.Latitude, x.Longitude)), BitmapDescriptorFactory.HueBlue);
+        }
+        void HideKeyboar(Activity YourThis)
+        {
+            var InputManager = (InputMethodManager)YourThis.GetSystemService(InputMethodService);
+            _ = InputManager.HideSoftInputFromWindow(YourThis.CurrentFocus.WindowToken, HideSoftInputFlags.NotAlways);
         }
 
         private void TxtSearch_Click(object sender, EventArgs e)
         {
             txtSearch.ShowDropDown();
-            GetSuggestions();
         }
-        void UpdateFoodSuggestions()
-        {
-            FoodSuggestions = LocalDatabase.GetFoodSearchHistory().ToList();
-        }
-        private void GetSuggestions()
-        {
-            if (string.IsNullOrWhiteSpace(txtSearch.Text))
-            {
+        #endregion
 
-            }
-        }
 
-        async Task SearchNearbyPlaces()
+
+
+
+        void FabCenter_Click(object sender, EventArgs e)
+        {
+            CenterOnCurrentLocation();
+        }
+        bool ActiveSearch { get; set; }
+
+
+        #region FoodSuggestions storage.
+        void FetchFoodSuggestions()
+        {
+            FoodSuggestions = LocalDatabase.GetFoodSearchHistory();
+        }
+        void UpdateFoodSuggestionsStorage()
+        {
+            if (FoodSuggestions.Contains(txtSearch.Text))
+                return;
+            FoodAdapter.Add(txtSearch.Text);
+            FoodSuggestions.Add(txtSearch.Text);
+            LocalDatabase.SaveFoodSearchHistory(FoodSuggestions);
+        }
+        #endregion
+
+        #region NearbyStores.
+        HashSet<Model.Concrete.StoreUser> NearbyStores = new HashSet<Model.Concrete.StoreUser>(new UserEqualityComparer());
+        //TODO: move this to the MapHandler. NearbyStores could be part of the MapHandler's state.
+        async Task SearchNearbyStores(LatLng Location = null)
         {
             if (MainMap.CameraPosition.Zoom <= 8)
                 return;
-            EssentialsLocation CurrentLocation = await GetCurrentLocation();
-            IEnumerable<IAppUser> NearbyStores = await Database.GetNearbyStoresAsync(new MyLocationRequest(CurrentLocation.Longitude, CurrentLocation.Latitude));
-            foreach (IAppUser store in NearbyStores)
+            EssentialsLocation TargetLocation = Location is null ? await GetCurrentLocation() : new EssentialsLocation(Location.Latitude, Location.Longitude);
+            //This is painfully suboptimal: we're fetching the same results over and over again, and then comparing them to avoid redrawing.
+            var FetchResult = (IEnumerable<Model.Concrete.StoreUser>)await Database.GetNearbyStoresAsync(new MyLocationRequest(TargetLocation.Longitude, TargetLocation.Latitude));
+            NearbyStores.UnionWith(FetchResult);
+
+            foreach (Model.Concrete.StoreUser Store in NearbyStores)
             {
-                var Options = new MarkerOptions();
-                Options.SetPosition(new LatLng(store.Latitude, store.Longitude));
-                Options.SetTitle(store.DisplayableName);
-
-                BitmapDescriptor bmDescriptor = ResolveStoreIcon();
-                Options.SetIcon(bmDescriptor);
-
-                MainMap.AddMarker(Options);
-                MappedStores.Add(store.Uid);
+                MapsHandler.Draw(new LatLng(Store.Latitude, Store.Longitude), ResolveStoreIcon());
             }
         }
-
         private BitmapDescriptor ResolveStoreIcon()
         {
             float Zoom = MainMap.CameraPosition.Zoom;
+            BitmapDescriptor Output;
             switch (Zoom)
             {
-                case var _ when Zoom < 8: return BitmapDescriptorFactory.FromResource(Resource.Drawable.ic_store_mall_directory_128_64);
-                case var _ when Zoom < 12: return BitmapDescriptorFactory.FromResource(Resource.Drawable.ic_store_mall_directory_128_48);
-                case var _ when Zoom < 15: return BitmapDescriptorFactory.FromResource(Resource.Drawable.ic_store_mall_directory_128_32);
-                case var _ when Zoom < 18: return BitmapDescriptorFactory.FromResource(Resource.Drawable.ic_store_mall_directory_128_24);
-                default: return null;
+                case var _ when Zoom < 8: Output = BitmapDescriptorFactory.FromResource(Resource.Drawable.ic_store_mall_directory_128_64); break;
+                case var _ when Zoom < 12: Output = BitmapDescriptorFactory.FromResource(Resource.Drawable.ic_store_mall_directory_128_48); break;
+                case var _ when Zoom < 15: Output = BitmapDescriptorFactory.FromResource(Resource.Drawable.ic_store_mall_directory_128_32); break;
+                case var _ when Zoom < 18: Output = BitmapDescriptorFactory.FromResource(Resource.Drawable.ic_store_mall_directory_128_24); break;
+                default: Output = null; break;
             }
+            return Output;
         }
-
+        #endregion
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
             //MenuInflater.Inflate(Resource.Menu.nav_menu, menu);
@@ -169,53 +241,37 @@ namespace MercadoYa.AndroidApp.Activities
 
             return base.OnOptionsItemSelected(item);
         }
-
-        private void FabOnClick(object sender, EventArgs eventArgs)
-        {
-            var view = (View)sender;
-            Snackbar.Make(view, "Replace with your own action", Snackbar.LengthLong)
-                .SetAction("Action", (View.IOnClickListener)null).Show();
-        }
-        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
-        {
-            Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
-
-            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
         public void OnMapReady(GoogleMap googleMap)
         {
             MainMap = googleMap;
             MainMap.MyLocationEnabled = true;
-            UpdateMapLocation();
+            MainMap.UiSettings.MyLocationButtonEnabled = false;
             MainMap.CameraIdle += MainMap_CameraIdle;
-            MainMap.CameraChange += MainMap_CameraChange;
             string MapKey = Resources.GetString(Resource.String.maps_key);
-            MapsHandler = new MapsHandler(MapKey);
+            MapsHandler = new MapHandler(MapKey, MainMap);
+            CenterOnCurrentLocation(false);
         }
-
-        void MainMap_CameraChange(object sender, GoogleMap.CameraChangeEventArgs e)
-        {
-            //var currentZoomLevel = MainMap.CameraPosition.Zoom;
-            //if ((int)e.Position.Zoom == (int)currentZoomLevel)
-            //    return;
-
-            //currentZoomLevel = (int)e.Position.Zoom;
-        }
-
         async void MainMap_CameraIdle(object sender, EventArgs e)
         {
-            //TODO: add a current location/search location text edit.
-            //Then we can use the MapsHandler to get the location updated:
-            //var CurrentLocation = MainMap.CameraPosition.Target;
-            //var CurrentLocationText = MapsHandler.FindCoordinateAddress(CurrentLocation);
-            await SearchNearbyPlaces();
+            if (ActiveSearch)
+            {
+                btnSearchHere.Visibility = ViewStates.Visible;
+            }
+            //await SearchNearbyPlaces();
+        }
+        async void CenterOnCurrentLocation(bool Animate = true)
+        {
+            if (!CheckLocationPermission())
+                return;
+            await MapsHandler?.CenterOnCurrentLocation(Animate);
         }
 
+        #region Persmissions.
         bool CheckLocationPermission()
         {
             if ((int)Build.VERSION.SdkInt < 23)
                 return true;
-            bool PermissionGranted = false;
+            bool PermissionGranted;
             if (Android.Support.V4.Content.ContextCompat.CheckSelfPermission(this, Manifest.Permission.AccessFineLocation) != Permission.Granted &&
                 Android.Support.V4.Content.ContextCompat.CheckSelfPermission(this, Manifest.Permission.AccessCoarseLocation) != Permission.Granted)
             {
@@ -228,47 +284,23 @@ namespace MercadoYa.AndroidApp.Activities
             }
             return PermissionGranted;
         }
-        void CreateLocationRequest()
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
         {
-            LocRequest = new LocationRequest();
-            LocRequest.SetInterval(UPDATE_INTERVAL);
-            LocRequest.SetFastestInterval(FASTEST_INTERVAL);
-            LocRequest.SetSmallestDisplacement(DISPLACEMENT);
-            LocRequest.SetPriority(LocationRequest.PriorityHighAccuracy);
-            LocationClient = LocationServices.GetFusedLocationProviderClient(this);
-            LocationCallback = new LocationCallbackHelper();
-            LocationCallback.MyLocation += LocationCallback_MyLocation;
-        }
-        void LocationCallback_MyLocation(object sender, LocationCallbackHelper.OnLocationCapturedEventArgs e)
-        {
-            LastLocation = e.Location;
-            var Position = new LatLng(LastLocation.Latitude, LastLocation.Longitude);
-            MainMap?.AnimateCamera(CameraUpdateFactory.NewLatLngZoom(Position, 17));
+            Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
+            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
-        async void UpdateMapLocation()
-        {
-            if (!CheckLocationPermission())
-                return;
-            if (LastLocation != null)
-            {
-                EssentialsLocation UserLocation = await GetCurrentLocation();
-                var MyPosition = new LatLng(UserLocation.Latitude, UserLocation.Longitude);
-                MainMap.MoveCamera(CameraUpdateFactory.NewLatLngZoom(MyPosition, 17));
-            }
-        }
+        #endregion
+
         async Task<EssentialsLocation> GetCurrentLocation()
         {
             var request = new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(60));
             return await Geolocation.GetLocationAsync(request);
         }
-        void StartLocationUpdate()
-        {
-            if (CheckLocationPermission())
-                LocationClient.RequestLocationUpdates(LocRequest, LocationCallback, null);
-        }
+
 
         public static readonly int RC_INSTALL_GOOGLE_PLAY_SERVICES = 1000;
+        [Obsolete("Not being currently used.")]
         bool TestIfGooglePlayServicesIsInstalled()
         {
             int queryResult = GoogleApiAvailability.Instance.IsGooglePlayServicesAvailable(this);
@@ -279,7 +311,7 @@ namespace MercadoYa.AndroidApp.Activities
 
             if (GoogleApiAvailability.Instance.IsUserResolvableError(queryResult))
             {
-                string errorString = GoogleApiAvailability.Instance.GetErrorString(queryResult);
+                //string errorString = GoogleApiAvailability.Instance.GetErrorString(queryResult);
                 Dialog errorDialog = GoogleApiAvailability.Instance.GetErrorDialog(this, queryResult, RC_INSTALL_GOOGLE_PLAY_SERVICES);
                 var dialogFrag = new MyErrorDialogFragment(errorDialog);
 

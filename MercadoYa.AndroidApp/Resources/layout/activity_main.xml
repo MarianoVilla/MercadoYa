@@ -28,16 +28,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/txtSearch"
-            android:gravity="top"
+            android:layout_gravity="top|center"
+            android:layout_margin="5dp"
+            android:background="@drawable/round_button"
             android:textAlignment="center"
             android:hint="¿Qué vas a comer?"
             android:inputType="text"
             android:singleLine="true"
-            android:layout_margin="2dp" 
+            android:paddingTop="4dp"
             android:imeOptions="actionSearch"
-    />
+            android:allowUndo="true" />
+
+
         <include
             layout="@layout/content_main" />
+
 
     </LinearLayout>
 

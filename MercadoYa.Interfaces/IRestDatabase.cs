@@ -8,5 +8,6 @@ namespace MercadoYa.Interfaces
     public interface IRestDatabase
     {
         Task<IEnumerable<IAppUser>> GetNearbyStoresAsync(ILocationRequest Request);
+        Task<IEnumerable<IAppUser>> GetNearbyStoresAsync(double Longitude, double Latitude);
     }
 }

@@ -30,5 +30,8 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
             }
             return Stores;
         }
+
+        public Task<IEnumerable<IAppUser>> GetNearbyStoresAsync(double Longitude, double Latitude) 
+            => GetNearbyStoresAsync(new LocationRequest(Longitude, Latitude));
     }
 }

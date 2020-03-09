@@ -1,5 +1,6 @@
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -8,12 +9,39 @@
         android:layout_height="fill_parent"
         android:background="@color/mercadoYaAsh">
 
+
         <fragment
             android:id="@+id/map"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             class="com.google.android.gms.maps.SupportMapFragment"
         />
+
+        <Button
+            android:id="@+id/btnSearchHere"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center"
+            android:background="@drawable/round_button"
+            android:text="Buscar en esta zona"
+            android:textAllCaps="false"
+            android:visibility="invisible"
+            android:textColor="@android:color/black"
+            />
+
+
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabCenter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            app:srcCompat="@drawable/ic_current_location_48" />
+
     </FrameLayout>
+
+
+
 
 </android.support.design.widget.CoordinatorLayout>

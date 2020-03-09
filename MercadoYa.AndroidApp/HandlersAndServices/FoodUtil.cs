@@ -16,11 +16,5 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
 {
     public static class FoodUtil
     {
-        public static Food GetFood(string Name)
-        {
-            DatabaseReference FoodWithThatName = FirebaseHandler.GetDatabase().GetFoods(Name);
-            var Limited = FoodWithThatName.LimitToFirst(1);
-            return new Food();
-        }
     }
 }

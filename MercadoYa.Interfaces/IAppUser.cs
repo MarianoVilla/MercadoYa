@@ -16,6 +16,10 @@ namespace MercadoYa.Interfaces
         string Phone { get; set; }
         string UserType { get; set; }
         IEnumerable<ITag> Tags { get; set; }
+        int CompareTo(object obj)
+        {
+            throw new NotImplementedException();
+        }
 
     }
 }
