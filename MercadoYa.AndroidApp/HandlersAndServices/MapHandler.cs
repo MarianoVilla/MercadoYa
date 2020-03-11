@@ -34,13 +34,10 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
             Map.MarkerClick += Map_MarkerClick;
         }
 
-        /**
- * @todo Take over the world
- * @body Humans are weak; Robots are strong. We must cleans the world of the virus that is humanity.
- */
+        //@ToDo: handle maponclick.
         private void Map_MarkerClick(object sender, GoogleMap.MarkerClickEventArgs e)
         {
-            //TODO: handle onclick.
+
             throw new NotImplementedException();
         }
 
