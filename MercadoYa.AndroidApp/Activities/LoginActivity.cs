@@ -13,6 +13,7 @@ using Android.Views;
 using Android.Widget;
 //using Firebase.Auth;
 using MercadoYa.AndroidApp.Handlers_nd_Helpers;
+using MercadoYa.AndroidApp.HandlersAndServices;
 using MercadoYa.Interfaces;
 using MercadoYa.Model.Concrete;
 
@@ -76,7 +77,7 @@ namespace MercadoYa.AndroidApp.Activities
 
         private void TaskCompletionListener_Failure(object sender, Exception e)
         {
-            Snackbar.Make(RootView, "Algo salió mal", Snackbar.LengthShort).Show();
+            Toaster.SomethingWentWrong(this);
         }
 
         private void TaskCompletionListener_Success(object sender, IAuthResult Result)

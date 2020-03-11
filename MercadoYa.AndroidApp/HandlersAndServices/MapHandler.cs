@@ -12,6 +12,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using MercadoYa.AndroidApp.Model;
 using MercadoYa.Model.Concrete;
 using Newtonsoft.Json;
 using Xamarin.Essentials;
@@ -30,35 +31,50 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
         {
             this.MapKey = MapsApiKey;
             this.Map = Map;
+            Map.MarkerClick += Map_MarkerClick;
         }
-        public void Draw(LatLng Position, BitmapDescriptor Icon = null)
+
+        private void Map_MarkerClick(object sender, GoogleMap.MarkerClickEventArgs e)
+        {
+            //TODO: handle onclick.
+            throw new NotImplementedException();
+        }
+
+
+        #region Drawing logic.
+        public void Draw(LatLng Position, BitmapDescriptor Icon = null, object Metadata = null)
         {
             var Existing = MappedMarkers.FirstOrDefault(x => x.Position.Longitude == Position.Longitude && x.Position.Latitude == Position.Latitude);
             if(Existing is null)
             {
-                DrawNew(Position, Icon);
+                DrawNew(Position, Icon, Metadata);
                 return;
             }
             Existing.SetIcon(Icon);
         }
-        public void Draw(IEnumerable<LatLng> Positions, BitmapDescriptor Icon = null)
+        public void Draw(IEnumerable<LatLng> Positions, BitmapDescriptor Icon = null, object Metadata = null)
         {
             foreach(var p in Positions)
-                Draw(p, Icon);
+                Draw(p, Icon, Metadata);
         }
-        public void Draw(IEnumerable<LatLng> Positions, float Hue)
+        public void Draw(IEnumerable<LatLng> Positions, float Hue, object Metadata = null)
         {
             foreach (var p in Positions)
-                Draw(p, BitmapDescriptorFactory.DefaultMarker(Hue));
+                Draw(p, BitmapDescriptorFactory.DefaultMarker(Hue), Metadata);
         }
-        void DrawNew(LatLng Position, BitmapDescriptor Icon = null)
+        void DrawNew(LatLng Position, BitmapDescriptor Icon = null, object Metadata = null)
         {
             var Options = new MarkerOptions();
             Options.SetPosition(Position);
             Options.SetIcon(Icon ?? BitmapDescriptorFactory.DefaultMarker(BitmapDescriptorFactory.HueGreen));
             var AddedMarker = Map.AddMarker(Options);
+            AddedMarker.Tag = new JavaObjectWrapper<object>() { Obj = Metadata };
             MappedMarkers.Add(AddedMarker);
         }
+        #endregion
+
+
+        #region Location logic.
         public async Task CenterOnCurrentLocation(bool Animate = true, int Zoom = 17)
         {
             //CachedUserLocation = CachedUserLocation ?? await GetCurrentLocation();
@@ -83,6 +99,8 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
             CachedUserLocation.Latitude = location.Latitude;
             CachedUserLocation.Longitude = location.Longitude;
         }
+        #endregion
+
 
         #region GeoCode API stuff.
         public string GetGeoCodeUrl(double Lat, double Lng)

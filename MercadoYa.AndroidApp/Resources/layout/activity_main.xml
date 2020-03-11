@@ -13,7 +13,20 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_height="match_parent"
-        android:layout_width="match_parent">
+        android:layout_width="match_parent"
+        android:background="@android:color/transparent">
+
+        <AutoCompleteTextView
+            android:layout_width="match_parent"
+            android:layout_height="44.5dp"
+            android:id="@+id/txtSearch"
+            android:layout_gravity="top|center"
+            android:background="@drawable/editextrounded"
+            android:textAlignment="center"
+            android:hint="¿Qué vas a comer?"
+            android:inputType="text"
+            android:imeOptions="actionSearch"
+            android:layout_marginTop="1dp"/>
 
         <!--        <android.support.design.widget.NavigationView
         android:id="@+id/navView"
@@ -23,21 +36,6 @@
         android:layout_gravity="start"
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/nav_menu_main"/>-->
-
-        <AutoCompleteTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/txtSearch"
-            android:layout_gravity="top|center"
-            android:layout_margin="5dp"
-            android:background="@drawable/round_button"
-            android:textAlignment="center"
-            android:hint="¿Qué vas a comer?"
-            android:inputType="text"
-            android:singleLine="true"
-            android:paddingTop="4dp"
-            android:imeOptions="actionSearch"
-            android:allowUndo="true" />
 
 
         <include

@@ -26,6 +26,7 @@ using Xamarin.Essentials;
 using static MercadoYa.AndroidApp.Handlers_nd_Helpers.LocationCallbacker;
 using EssentialsLocation = Xamarin.Essentials.Location;
 using MyLocationRequest = MercadoYa.Model.Concrete.LocationRequest;
+using StoreUser = MercadoYa.Model.Concrete.StoreUser;
 
 namespace MercadoYa.AndroidApp.Activities
 {
@@ -150,9 +151,9 @@ namespace MercadoYa.AndroidApp.Activities
             HideKeyboar(this);
             ActiveSearch = true;
         }
-        void ApplySearchFilter(IEnumerable<Model.Concrete.StoreUser> StoresToFilter)
+        void ApplySearchFilter(IEnumerable<StoreUser> StoresToFilter)
         {
-            IEnumerable<Model.Concrete.StoreUser> FilteredByFood = StoresToFilter.FilteredByFood(txtSearch.Text);
+            IEnumerable<StoreUser> FilteredByFood = StoresToFilter.FilteredByFood(txtSearch.Text);
             MapsHandler.Draw(FilteredByFood.Select(x => new LatLng(x.Latitude, x.Longitude)), BitmapDescriptorFactory.HueBlue);
         }
         void HideKeyboar(Activity YourThis)
@@ -194,7 +195,7 @@ namespace MercadoYa.AndroidApp.Activities
         #endregion
 
         #region NearbyStores.
-        HashSet<Model.Concrete.StoreUser> NearbyStores = new HashSet<Model.Concrete.StoreUser>(new UserEqualityComparer());
+        HashSet<StoreUser> NearbyStores = new HashSet<StoreUser>(new UserEqualityComparer());
         //TODO: move this to the MapHandler. NearbyStores could be part of the MapHandler's state.
         async Task SearchNearbyStores(LatLng Location = null)
         {
@@ -202,12 +203,12 @@ namespace MercadoYa.AndroidApp.Activities
                 return;
             EssentialsLocation TargetLocation = Location is null ? await GetCurrentLocation() : new EssentialsLocation(Location.Latitude, Location.Longitude);
             //This is painfully suboptimal: we're fetching the same results over and over again, and then comparing them to avoid redrawing.
-            var FetchResult = (IEnumerable<Model.Concrete.StoreUser>)await Database.GetNearbyStoresAsync(new MyLocationRequest(TargetLocation.Longitude, TargetLocation.Latitude));
+            var FetchResult = (IEnumerable<StoreUser>)await Database.GetNearbyStoresAsync(new MyLocationRequest(TargetLocation.Longitude, TargetLocation.Latitude));
             NearbyStores.UnionWith(FetchResult);
 
-            foreach (Model.Concrete.StoreUser Store in NearbyStores)
+            foreach (StoreUser Store in NearbyStores)
             {
-                MapsHandler.Draw(new LatLng(Store.Latitude, Store.Longitude), ResolveStoreIcon());
+                MapsHandler.Draw(new LatLng(Store.Latitude, Store.Longitude), ResolveStoreIcon(), Store);
             }
         }
         private BitmapDescriptor ResolveStoreIcon()
@@ -263,7 +264,7 @@ namespace MercadoYa.AndroidApp.Activities
         {
             if (!CheckLocationPermission())
                 return;
-            await MapsHandler?.CenterOnCurrentLocation(Animate);
+            await MapsHandler.CenterOnCurrentLocation(Animate);
         }
 
         #region Persmissions.

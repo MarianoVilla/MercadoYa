@@ -16,6 +16,7 @@ using Android.Widget;
 using Firebase.Database;
 using Java.Util;
 using MercadoYa.AndroidApp.Handlers_nd_Helpers;
+using MercadoYa.AndroidApp.HandlersAndServices;
 using MercadoYa.Interfaces;
 using MercadoYa.Model.Concrete;
 
@@ -91,7 +92,7 @@ namespace MercadoYa.AndroidApp.Activities
 
         void TaskCompletionListener_Failure(object sender, Exception e)
         {
-            Snackbar.Make(RootView, "Ocurrió un error al registrarse", Snackbar.LengthShort).Show();
+            Toaster.SomethingWentWrong(this);
         }
 
         void TaskCompletionListener_Success(object sender, IAuthResult Result)

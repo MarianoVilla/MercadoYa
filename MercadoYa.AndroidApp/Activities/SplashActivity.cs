@@ -12,6 +12,7 @@ using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
 using MercadoYa.AndroidApp.Handlers_nd_Helpers;
+using MercadoYa.AndroidApp.HandlersAndServices;
 using MercadoYa.Interfaces;
 using MercadoYa.Lib.Util;
 using MercadoYa.Model.Concrete;
@@ -77,7 +78,7 @@ namespace MercadoYa.AndroidApp.Activities
         }
         private void TaskCompletionListener_Failure(object sender, Exception e)
         {
-            Toast.MakeText(this, "Algo salió mal", ToastLength.Short);
+            Toaster.SomethingWentWrong(this);
             StartActivity(typeof(LoginActivity));
             Finish();
         }

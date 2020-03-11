@@ -81,9 +81,11 @@
     <Compile Include="HandlersAndServices\RestDatabase.cs" />
     <Compile Include="HandlersAndServices\AuthCompletionListener.cs" />
     <Compile Include="HandlersAndServices\TinyIoC.cs" />
+    <Compile Include="HandlersAndServices\Toaster.cs" />
     <Compile Include="HandlersAndServices\UserProfileEventListener.cs" />
     <Compile Include="HandlersAndServices\UserUtil.cs" />
     <Compile Include="Activities\MainActivity.cs" />
+    <Compile Include="Model\JavaObjectWrapper.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -299,6 +301,16 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\ic_cross_81577_32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\editextrounded.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\edit.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
