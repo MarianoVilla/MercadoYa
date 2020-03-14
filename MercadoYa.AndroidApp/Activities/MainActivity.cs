@@ -57,16 +57,6 @@ namespace MercadoYa.AndroidApp.Activities
             CheckLocationPermission();
             ResolveDependencies();
             SetupLocationProvider();
-
-
-            //DrawerLayout drawer = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
-            //ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, Resource.String.navigation_drawer_open, Resource.String.navigation_drawer_close);
-            //drawer.AddDrawerListener(toggle);
-            //toggle.SyncState();
-
-
-            NavigationView navigationView = FindViewById<NavigationView>(Resource.Id.nav_view);
-            navigationView.SetNavigationItemSelectedListener(this);
         }
 
 
@@ -102,11 +92,17 @@ namespace MercadoYa.AndroidApp.Activities
             this.btnSearchHere = FindViewById<Button>(Resource.Id.btnSearchHere);
             this.txtSearch = FindViewById<AutoCompleteTextView>(Resource.Id.txtSearch);
 
+            InitNavigationView();
             InitTxtSearch();
 
             fabCenter.Click += FabCenter_Click;
             btnSearchHere.Click += BtnSearchHere_Click;
 
+        }
+        void InitNavigationView()
+        {
+            NavigationView navigationView = FindViewById<NavigationView>(Resource.Id.nav_view);
+            navigationView.SetNavigationItemSelectedListener(this);
         }
         private async void BtnSearchHere_Click(object sender, EventArgs e)
         {
@@ -155,7 +151,7 @@ namespace MercadoYa.AndroidApp.Activities
         private void TxtSearch_EditorAction(object sender, TextView.EditorActionEventArgs e)
         {
             UpdateFoodSuggestionsStorage();
-            //@ToDo replace this minimalistic extension with an actual search/suggestions engine.
+            //@ToDo: replace this minimalistic extension with an actual search/suggestions engine.
             ApplySearchFilter(NearbyStores);
             HideKeyboar(this);
             ActiveSearch = true;
