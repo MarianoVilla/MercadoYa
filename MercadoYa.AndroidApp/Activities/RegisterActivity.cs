@@ -64,7 +64,7 @@ namespace MercadoYa.AndroidApp.Activities
             Finish();
         }
         //@ToDo: Location data.
-        //@Label ToDo, Enhancement
+        //@Label Enhancement
         async void BtnRegister_Click(object sender, EventArgs e)
         {
             Animator.FadeIn();
