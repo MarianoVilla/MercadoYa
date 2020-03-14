@@ -31,7 +31,7 @@ using StoreUser = MercadoYa.Model.Concrete.StoreUser;
 namespace MercadoYa.AndroidApp.Activities
 {
     [Activity(Label = "@string/app_name", Theme = "@style/MercadoYa.Theme", MainLauncher = false)]
-    public class MainActivity : AppCompatActivity, IOnMapReadyCallback
+    public class MainActivity : AppCompatActivity, IOnMapReadyCallback, NavigationView.IOnNavigationItemSelectedListener
     {
         GoogleMap MainMap;
         readonly string[] PermissionGroupLocation = { Manifest.Permission.AccessCoarseLocation, Manifest.Permission.AccessFineLocation };
@@ -58,6 +58,15 @@ namespace MercadoYa.AndroidApp.Activities
             ResolveDependencies();
             SetupLocationProvider();
 
+
+            //DrawerLayout drawer = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
+            //ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, Resource.String.navigation_drawer_open, Resource.String.navigation_drawer_close);
+            //drawer.AddDrawerListener(toggle);
+            //toggle.SyncState();
+
+
+            NavigationView navigationView = FindViewById<NavigationView>(Resource.Id.nav_view);
+            navigationView.SetNavigationItemSelectedListener(this);
         }
 
 
@@ -146,7 +155,7 @@ namespace MercadoYa.AndroidApp.Activities
         private void TxtSearch_EditorAction(object sender, TextView.EditorActionEventArgs e)
         {
             UpdateFoodSuggestionsStorage();
-            //TODO: replace this minimalistic extension with an actual search/suggestions engine.
+            //@ToDo replace this minimalistic extension with an actual search/suggestions engine.
             ApplySearchFilter(NearbyStores);
             HideKeyboar(this);
             ActiveSearch = true;
@@ -196,7 +205,7 @@ namespace MercadoYa.AndroidApp.Activities
 
         #region NearbyStores.
         HashSet<StoreUser> NearbyStores = new HashSet<StoreUser>(new UserEqualityComparer());
-        //TODO: move this to the MapHandler. NearbyStores could be part of the MapHandler's state.
+        //@ToDo move this to the MapHandler. NearbyStores could be part of the MapHandler's state.
         async Task SearchNearbyStores(LatLng Location = null)
         {
             if (MainMap.CameraPosition.Zoom <= 8)
@@ -320,6 +329,12 @@ namespace MercadoYa.AndroidApp.Activities
             }
 
             return false;
+        }
+
+        //@ToDo Finish sidebar design and events.
+        public bool OnNavigationItemSelected(IMenuItem menuItem)
+        {
+            throw new NotImplementedException();
         }
     }
 }

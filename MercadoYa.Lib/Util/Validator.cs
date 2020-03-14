@@ -8,7 +8,7 @@ namespace MercadoYa.Lib.Util
 {
     public class Validator : IValidator
     {
-        //TODO: extract this fields into an interface that abstracts the idea of validation messages, to handle regional stuff.
+        //@ToDo  extract this fields into an interface that abstracts the idea of validation messages, to handle regional stuff.
         static string InvalidEmailMessage = "El correo electrónico es inválido.\n";
         static string InvalidPhoneMessage = "El número es inválido.\n";
         static string InvalidNameMessage = "El nombre es inválido.\n";

@@ -37,8 +37,10 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
         //@ToDo: handle maponclick.
         private void Map_MarkerClick(object sender, GoogleMap.MarkerClickEventArgs e)
         {
-
-            throw new NotImplementedException();
+            var Store = e.Marker.Tag as JavaObjectWrapper<StoreUser>;
+            if (Store is null)
+                return;
+            //Show store details.
         }
 
 

@@ -20,7 +20,7 @@ namespace MercadoYa.Da.MySql
         public string AddCustomerUser(IAppUser User, IUserCredentials Credentials) => AddUser(User, Credentials, Const.SpInsertCustomerUser);
 
         string AddUser(IAppUser User, IUserCredentials Credentials, string Stored)
-        {
+        {                       
             using IDbConnection conn = new MySqlConnection(ConnectionString);
 
             var Parameters = new DynamicParameters();
