@@ -75,7 +75,7 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
                 this.NotifyError(ex);
             }
         }
-        public async Task CreateCustomerAsync(IFullAppUser User)
+        public async Task RegisterUserAsync(IFullAppUser User)
         {
             try
             {

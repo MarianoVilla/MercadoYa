@@ -71,6 +71,7 @@
     <Compile Include="Activities\RegisterActivity.cs" />
     <Compile Include="Activities\SplashActivity.cs" />
     <Compile Include="Fragments\MyErrorDialogFragment.cs" />
+    <Compile Include="HandlersAndServices\AnimationHandler.cs" />
     <Compile Include="HandlersAndServices\ExtensionMethods.cs" />
     <Compile Include="HandlersAndServices\FirebaseHandler.cs" />
     <Compile Include="HandlersAndServices\FoodUtil.cs" />

@@ -6,6 +6,7 @@
     <color name="splashBackground">#fff</color>
   <color name="mercadoYaPrimary">#1c4258</color>
   <color name="mercadoYaAccent">#ee861f</color>
+  <color name="mercadoYaAccent2">#ff8c00</color>
   <color name="mercadoYaPrimaryDark">#102a38</color>
   <color name="mercadoYaWhite">#fff</color>
   <color name="mercadoYaAsh">#e2e2e2</color>

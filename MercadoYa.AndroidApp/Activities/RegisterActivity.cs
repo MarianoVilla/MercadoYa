@@ -1,24 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
-using Android.Gms.Tasks;
+﻿using Android.App;
 using Android.OS;
-using Android.Runtime;
 using Android.Support.Design.Widget;
 using Android.Support.V7.App;
-using Android.Views;
 using Android.Widget;
 //using Firebase.Auth;
-using Firebase.Database;
-using Java.Util;
 using MercadoYa.AndroidApp.Handlers_nd_Helpers;
 using MercadoYa.AndroidApp.HandlersAndServices;
 using MercadoYa.Interfaces;
 using MercadoYa.Model.Concrete;
+using System;
+using System.Threading.Tasks;
 
 namespace MercadoYa.AndroidApp.Activities
 {
@@ -34,6 +25,7 @@ namespace MercadoYa.AndroidApp.Activities
         CoordinatorLayout RootView;
         TextView txtClickToLogin;
         IFullAppUser Customer;
+        AnimationHandler Animator;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -52,13 +44,15 @@ namespace MercadoYa.AndroidApp.Activities
 
         void InitControls()
         {
-            RootView = (CoordinatorLayout)FindViewById(Resource.Id.rootView);
-            txtName = (TextInputLayout)FindViewById(Resource.Id.txtFullName);
-            txtPhone = (TextInputLayout)FindViewById(Resource.Id.txtPhoneNumber);
-            txtEmail = (TextInputLayout)FindViewById(Resource.Id.txtEmail);
-            txtPassword = (TextInputLayout)FindViewById(Resource.Id.txtPassword);
-            btnRegister = (Button)FindViewById(Resource.Id.btnRegister);
-            txtClickToLogin = (TextView)FindViewById(Resource.Id.txtGoToLogin);
+            this.RootView = (CoordinatorLayout)FindViewById(Resource.Id.rootView);
+            this.txtName = (TextInputLayout)FindViewById(Resource.Id.txtFullName);
+            this.txtPhone = (TextInputLayout)FindViewById(Resource.Id.txtPhoneNumber);
+            this.txtEmail = (TextInputLayout)FindViewById(Resource.Id.txtEmail);
+            this.txtPassword = (TextInputLayout)FindViewById(Resource.Id.txtPassword);
+            this.btnRegister = (Button)FindViewById(Resource.Id.btnRegister);
+            this.txtClickToLogin = (TextView)FindViewById(Resource.Id.txtGoToLogin);
+            var ProgBar = (ProgressBar)FindViewById(Resource.Id.loadingProgress);
+            this.Animator = new AnimationHandler(ProgBar);
 
             btnRegister.Click += BtnRegister_Click;
             txtClickToLogin.Click += TxtClickToLogin_Click;
@@ -69,9 +63,12 @@ namespace MercadoYa.AndroidApp.Activities
             StartActivity(typeof(LoginActivity));
             Finish();
         }
-
-        void BtnRegister_Click(object sender, EventArgs e)
+        //@ToDo: Location data.
+        //@Label ['ToDo', 'Enhancement']
+        async void BtnRegister_Click(object sender, EventArgs e)
         {
+            Animator.FadeIn();
+
             Customer.Username = txtName.EditText.Text;
             Customer.Phone = txtPhone.EditText.Text;
             Customer.Email = txtEmail.EditText.Text;
@@ -80,23 +77,25 @@ namespace MercadoYa.AndroidApp.Activities
             if (UserUtil.PromptIfInvalid(RootView, Customer))
                 return;
 
-            RegisterUser();
+            await RegisterUser();
         }
-        void RegisterUser()
+        async Task RegisterUser()
         {
             var TaskCompletionListener = new AuthCompletionListener(TaskCompletionListener_Success, TaskCompletionListener_Failure);
-            Authenticator.CreateCustomerAsync(Customer);
             Authenticator.AddOnFailureListener(TaskCompletionListener);
             Authenticator.AddOnSuccessListener(TaskCompletionListener);
+            await Authenticator.RegisterUserAsync(Customer);
         }
 
         void TaskCompletionListener_Failure(object sender, Exception e)
         {
+            Animator.FadeOut();
             Toaster.SomethingWentWrong(this);
         }
 
         void TaskCompletionListener_Success(object sender, IAuthResult Result)
         {
+            Animator.FadeOut();
             Snackbar.Make(RootView, "¡Registro exitoso!", Snackbar.LengthShort).Show();
             var User = Result.User as FullCustomerUser;
             UserUtil.SaveIfValid(User.Email, User.Password);

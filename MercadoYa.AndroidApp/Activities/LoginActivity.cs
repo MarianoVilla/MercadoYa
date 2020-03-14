@@ -1,21 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
+﻿using Android.App;
 using Android.OS;
-using Android.Runtime;
 using Android.Support.Design.Widget;
 using Android.Support.V7.App;
-using Android.Views;
 using Android.Widget;
-//using Firebase.Auth;
 using MercadoYa.AndroidApp.Handlers_nd_Helpers;
 using MercadoYa.AndroidApp.HandlersAndServices;
 using MercadoYa.Interfaces;
 using MercadoYa.Model.Concrete;
+using System;
 
 namespace MercadoYa.AndroidApp.Activities
 {
@@ -29,6 +21,7 @@ namespace MercadoYa.AndroidApp.Activities
         Button btnLogin;
         CoordinatorLayout RootView;
         IObservableClientAuthenticator Authenticator;
+        AnimationHandler Animator;
 
         string Email, Password;
 
@@ -48,19 +41,21 @@ namespace MercadoYa.AndroidApp.Activities
 
         private void InitControls()
         {
-            RootView = (CoordinatorLayout)FindViewById(Resource.Id.rootView);
-            txtGoToRegister = (TextView)FindViewById(Resource.Id.txtGoToRegister);
-            txtEmail = (TextInputLayout)FindViewById(Resource.Id.txtEmail);
-            txtPassword = (TextInputLayout)FindViewById(Resource.Id.txtPassword);
-            btnLogin = (Button)FindViewById(Resource.Id.btnLogin);
+            this.RootView = (CoordinatorLayout)FindViewById(Resource.Id.rootView);
+            this.txtGoToRegister = (TextView)FindViewById(Resource.Id.txtGoToRegister);
+            this.txtEmail = (TextInputLayout)FindViewById(Resource.Id.txtEmail);
+            this.txtPassword = (TextInputLayout)FindViewById(Resource.Id.txtPassword);
+            this.btnLogin = (Button)FindViewById(Resource.Id.btnLogin);
+            var ProgBar = (ProgressBar)FindViewById(Resource.Id.loadingProgress);
+            this.Animator = new AnimationHandler(ProgBar);
 
             btnLogin.Click += BtnLogin_Click;
             txtGoToRegister.Click += TxtGoToRegister_Click;
 
         }
-
-        private void BtnLogin_Click(object sender, EventArgs e)
+        private async void BtnLogin_Click(object sender, EventArgs e)
         {
+            Animator.FadeIn();
 
             Email = txtEmail.EditText.Text;
             Password = txtPassword.EditText.Text;
@@ -72,16 +67,18 @@ namespace MercadoYa.AndroidApp.Activities
 
             Authenticator.AddOnFailureListener(TaskCompletionListener);
             Authenticator.AddOnSuccessListener(TaskCompletionListener);
-            Authenticator.SignInWithEmailAndPasswordAsync(Email, Password);
+            await Authenticator.SignInWithEmailAndPasswordAsync(Email, Password);
         }
 
         private void TaskCompletionListener_Failure(object sender, Exception e)
         {
+            Animator.FadeOut();
             Toaster.SomethingWentWrong(this);
         }
 
         private void TaskCompletionListener_Success(object sender, IAuthResult Result)
         {
+            Animator.FadeOut();
             var User = Result.User as FullCustomerUser;
             UserUtil.SaveIfValid(User.Email, User.Password);
             StartActivity(typeof(MainActivity));

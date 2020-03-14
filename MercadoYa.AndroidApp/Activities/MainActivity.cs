@@ -44,6 +44,7 @@ namespace MercadoYa.AndroidApp.Activities
         Button btnSearchHere;
         FusedLocationProviderClient LocationProviderClient;
 
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -92,18 +93,18 @@ namespace MercadoYa.AndroidApp.Activities
             this.btnSearchHere = FindViewById<Button>(Resource.Id.btnSearchHere);
             this.txtSearch = FindViewById<AutoCompleteTextView>(Resource.Id.txtSearch);
 
-            InitNavigationView();
+            //InitNavigationView();
             InitTxtSearch();
 
             fabCenter.Click += FabCenter_Click;
             btnSearchHere.Click += BtnSearchHere_Click;
 
         }
-        void InitNavigationView()
-        {
-            NavigationView navigationView = FindViewById<NavigationView>(Resource.Id.nav_view);
-            navigationView.SetNavigationItemSelectedListener(this);
-        }
+        //void InitNavigationView()
+        //{
+        //    NavigationView navigationView = FindViewById<NavigationView>(Resource.Id.nav_view);
+        //    navigationView.SetNavigationItemSelectedListener(this);
+        //}
         private async void BtnSearchHere_Click(object sender, EventArgs e)
         {
             await SearchNearbyStores(MainMap.Projection.VisibleRegion.LatLngBounds.Center);
@@ -328,6 +329,7 @@ namespace MercadoYa.AndroidApp.Activities
         }
 
         //@ToDo Finish sidebar design and events.
+        //@Body User settings, logout, about.
         public bool OnNavigationItemSelected(IMenuItem menuItem)
         {
             throw new NotImplementedException();

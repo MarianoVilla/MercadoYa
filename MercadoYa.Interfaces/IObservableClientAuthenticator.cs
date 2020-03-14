@@ -26,7 +26,7 @@ namespace MercadoYa.Interfaces
         void AddOnFailureListener(IOnFailureListener Listener);
 
         Task SignInWithEmailAndPasswordAsync(string Email, string Password);
-        Task CreateCustomerAsync(IFullAppUser User);
+        Task RegisterUserAsync(IFullAppUser User);
         Task CreateStoreAsync(IFullAppUser User);
 
     }

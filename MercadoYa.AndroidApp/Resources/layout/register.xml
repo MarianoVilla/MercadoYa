@@ -31,6 +31,16 @@
                 android:layout_below="@id/circleImageView"
                 android:layout_alignParentBottom="true"
                 android:textColor="@color/mercadoYaWhite"/>
+
+                        <ProgressBar
+                android:layout_below="@id/circleImageView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:visibility="visible"
+                android:alpha="0"
+                android:background="@color/mercadoYaPrimaryDark"
+                android:id="@+id/loadingProgress" />
         </RelativeLayout>
 
         <LinearLayout
