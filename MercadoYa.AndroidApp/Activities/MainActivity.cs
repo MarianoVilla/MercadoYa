@@ -10,6 +10,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Support.Design.Widget;
 using Android.Support.V7.App;
+using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
@@ -44,6 +45,8 @@ namespace MercadoYa.AndroidApp.Activities
         FloatingActionButton fabCenter;
         Button btnSearchHere;
         FusedLocationProviderClient LocationProviderClient;
+        StoreDetailsFragment StoreDetails;
+        CardView StoreDetailsCard;
 
 
         protected override async void OnCreate(Bundle savedInstanceState)
@@ -93,6 +96,8 @@ namespace MercadoYa.AndroidApp.Activities
             this.fabCenter = FindViewById<FloatingActionButton>(Resource.Id.fabCenter);
             this.btnSearchHere = FindViewById<Button>(Resource.Id.btnSearchHere);
             this.txtSearch = FindViewById<AutoCompleteTextView>(Resource.Id.txtSearch);
+            this.StoreDetails = (StoreDetailsFragment)SupportFragmentManager.FindFragmentById(Resource.Id.storeDetailsFragment);
+            this.StoreDetailsCard = FindViewById<CardView>(Resource.Id.storeDetailsCardView);
 
             //InitNavigationView();
             InitTxtSearch();
@@ -268,10 +273,12 @@ namespace MercadoYa.AndroidApp.Activities
             var Store = (e.Marker.Tag as JavaObjectWrapper<object>).Obj as StoreUser;
             if (Store is null)
                 return;
-            Android.Support.V4.App.Fragment StoreFragment = StoreDetailsFragment.NewInstance(Store);
-            SupportFragmentManager.BeginTransaction()
-                            .Add(StoreFragment, Store.Uid)
-                            .Commit();
+            //ToDo: update StoreDetails fragment.
+            StoreDetailsCard.Visibility = ViewStates.Visible;
+            //Android.Support.V4.App.Fragment StoreFragment = StoreDetailsFragment.NewInstance(Store);
+            //SupportFragmentManager.BeginTransaction()
+            //                .Add(StoreFragment, Store.Uid)
+            //                .Commit();
             //Show store details.
         }
         async void MainMap_CameraIdle(object sender, EventArgs e)

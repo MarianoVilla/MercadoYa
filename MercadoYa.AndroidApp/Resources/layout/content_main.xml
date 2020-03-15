@@ -58,6 +58,7 @@
                 android:layout_marginRight="10dp"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="12dp"
+                android:visibility="invisible"
                 android:id="@+id/storeDetailsCardView">
                 <fragment
                     android:id="@+id/storeDetailsFragment"

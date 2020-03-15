@@ -11,6 +11,7 @@ using System.Globalization;
 
 namespace MercadoYa.Rest.Controllers
 {
+    //@ToDo Add an action for store schedule.
     [ApiController]
     [Route("[controller]")]
     public class DatabaseController : ControllerBase

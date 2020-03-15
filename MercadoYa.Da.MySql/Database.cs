@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using GeneralUtil.Model;
 using MercadoYa.Da.MySql.QueryEngine;
 using MercadoYa.Interfaces;
 using MercadoYa.Model.Concrete;
@@ -59,14 +60,28 @@ namespace MercadoYa.Da.MySql
             IEnumerable<UserCredentials> Result = conn.Query<UserCredentials>(Query, new { Email });
             return Result.FirstOrDefault();
         }
-        //TODO: this should return users and for each user, ALL of its tags!
         public IEnumerable<IAppUser> GetNearbyStores(ILocationRequest Request)
         {
             using IDbConnection conn = new MySqlConnection(ConnectionString);
             var Parameters = new DynamicParameters();
             Parameters.AddByReflection(Request);
 
-            return conn.Query<StoreUser>(Const.SpGetNearbyStores, Parameters, commandType: CommandType.StoredProcedure);
+            var Result = conn.Query<dynamic>(Const.SpGetNearbyStores, Parameters, commandType: CommandType.StoredProcedure).Select(x => new StoreUser()
+            {
+                Uid = x.Uid,
+                Direction = x.Direction,
+                City = x.City,
+                Longitude = x.Longitude,
+                Latitude = x.Latitude,
+                ProfilePic = x.ProfilePic,
+                Phone = x.Phone,
+                DisplayableName = x.DisplayableName,
+                RatingScore = x.RatingScore,
+                Description = x.Description,
+                Lore = x.Lore,
+                OpenIntervals = new List<Interval<DateTime>>() { new Interval<DateTime>(new DateTime(x.OpensAt?.Ticks ?? 0), new DateTime(x.ClosesAt?.Ticks ?? 0)) }
+            }).ToList();
+            return Result;
         }
         public IEnumerable<IAppUser> GetNearbyStoresIncludingTags(ILocationRequest Request)
         {
@@ -100,3 +115,4 @@ namespace MercadoYa.Da.MySql
         }
     }
 }
+ 

@@ -23,6 +23,7 @@
             android:gravity="left"
             android:textSize="18dp"
             android:layout_gravity="bottom" 
+            android:editable="false"
         />
         <RatingBar
             android:layout_width="wrap_content"
@@ -33,11 +34,13 @@
             android:rating="4"
             style="@style/Base.Widget.AppCompat.RatingBar.Small"
             android:layout_gravity="left"
-        />
+        />  
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Some additional data"
+            android:id="@+id/txtAdditionalInfo"
+            android:editable="false"
         />
 
         <RelativeLayout
@@ -49,13 +52,16 @@
                 android:layout_height="wrap_content"
                 android:text="Open"
                 android:id="@+id/txtIsOpened"
+                android:editable="false"
         />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:layout_toRightOf="@id/txtIsOpened"
+                android:id="@+id/txtOpensAt"
                 android:text="Opens"
+                android:editable="false"
 
         />
         </RelativeLayout>
