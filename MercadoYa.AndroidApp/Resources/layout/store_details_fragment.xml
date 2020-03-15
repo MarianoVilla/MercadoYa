@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/mercadoYaLightAccent"
+    android:hapticFeedbackEnabled="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_margin="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="SomeStore's Name"
+            android:id="@+id/txtStoreName"
+            android:gravity="left"
+            android:textSize="18dp"
+            android:layout_gravity="bottom" 
+        />
+        <RatingBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/storeRatingBar"
+            android:numStars="5"
+            android:isIndicator="true"
+            android:rating="4"
+            style="@style/Base.Widget.AppCompat.RatingBar.Small"
+            android:layout_gravity="left"
+        />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Some additional data"
+        />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Open"
+                android:id="@+id/txtIsOpened"
+        />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@id/txtIsOpened"
+                android:text="Opens"
+
+        />
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/round_button"
+                android:text="Mensaje"
+                android:drawableRight="@drawable/ic_menu_send"
+                android:drawablePadding="4dp"
+                android:id="@+id/btnMessageStore"
+                android:textAllCaps="false"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/btnMessageStore"
+                android:background="@drawable/round_button"
+                android:text="Compartir"
+                android:drawableRight="@drawable/ic_menu_share"
+                android:drawablePadding="4dp"
+                android:id="@+id/btnShareStore"
+                android:textAllCaps="false"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ir en"
+                android:textAllCaps="false"
+                android:layout_toRightOf="@id/btnShareStore"
+                android:background="@drawable/round_button"
+                android:drawableRight="@drawable/uber_icon_32"
+                android:id="@+id/btnUberToStore"
+                android:drawablePadding="4dp"
+                
+            />
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+</android.support.constraint.ConstraintLayout >   

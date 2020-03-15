@@ -63,7 +63,6 @@ namespace MercadoYa.AndroidApp.Activities
             StartActivity(typeof(LoginActivity));
             Finish();
         }
-        //@Label enhancement
         async void BtnRegister_Click(object sender, EventArgs e)
         {
             Animator.FadeIn();

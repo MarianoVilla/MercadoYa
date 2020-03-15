@@ -16,6 +16,7 @@ using Android.Widget;
 using MercadoYa.AndroidApp.Fragments;
 using MercadoYa.AndroidApp.Handlers_nd_Helpers;
 using MercadoYa.AndroidApp.HandlersAndServices;
+using MercadoYa.AndroidApp.Model;
 using MercadoYa.Interfaces;
 using MercadoYa.Lib.Comparers;
 using System;
@@ -45,7 +46,7 @@ namespace MercadoYa.AndroidApp.Activities
         FusedLocationProviderClient LocationProviderClient;
 
 
-        protected override void OnCreate(Bundle savedInstanceState)
+        protected override async void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             Platform.Init(this, savedInstanceState);
@@ -57,11 +58,11 @@ namespace MercadoYa.AndroidApp.Activities
 
             CheckLocationPermission();
             ResolveDependencies();
-            SetupLocationProvider();
+            await SetupLocationProvider();
         }
 
 
-        private async Task SetupLocationProvider()
+        async Task SetupLocationProvider()
         {
             var LocRequest = new LocationRequest();
             LocRequest.SetInterval(1000);
@@ -70,11 +71,11 @@ namespace MercadoYa.AndroidApp.Activities
             LocRequest.SetPriority(LocationRequest.PriorityHighAccuracy);
             LocationProviderClient = LocationServices.GetFusedLocationProviderClient(this);
             var locationCallback = new LocationCallbacker();
-            locationCallback.MyLocation = LocationCallback_LocationResult;
+            locationCallback.MyLocationHandler = LocationCallback_LocationResult;
             await LocationProviderClient.RequestLocationUpdatesAsync(LocRequest, locationCallback);
         }
 
-        private async void LocationCallback_LocationResult(object sender, OnLocationCapturedEventArgs e)
+        async void LocationCallback_LocationResult(object sender, OnLocationCapturedEventArgs e)
         {
             MapsHandler.UpdateCachedLocation(e.Location);
             await SearchNearbyStores();
@@ -248,15 +249,30 @@ namespace MercadoYa.AndroidApp.Activities
 
             return base.OnOptionsItemSelected(item);
         }
+        //@ToDo: move these events to the MapHandler, providing an assignment interface for the caller.
         public void OnMapReady(GoogleMap googleMap)
         {
             MainMap = googleMap;
             MainMap.MyLocationEnabled = true;
             MainMap.UiSettings.MyLocationButtonEnabled = false;
             MainMap.CameraIdle += MainMap_CameraIdle;
+            MainMap.MarkerClick += Map_MarkerClick;
             string MapKey = Resources.GetString(Resource.String.maps_key);
             MapsHandler = new MapHandler(MapKey, MainMap);
             CenterOnCurrentLocation(false);
+        }
+        //@ToDo: handle maponclick.
+        void Map_MarkerClick(object sender, GoogleMap.MarkerClickEventArgs e)
+        {
+            //@ToDo: extract this expression into a method call that makes it more evident. I find it rather confusing.
+            var Store = (e.Marker.Tag as JavaObjectWrapper<object>).Obj as StoreUser;
+            if (Store is null)
+                return;
+            Android.Support.V4.App.Fragment StoreFragment = StoreDetailsFragment.NewInstance(Store);
+            SupportFragmentManager.BeginTransaction()
+                            .Add(StoreFragment, Store.Uid)
+                            .Commit();
+            //Show store details.
         }
         async void MainMap_CameraIdle(object sender, EventArgs e)
         {

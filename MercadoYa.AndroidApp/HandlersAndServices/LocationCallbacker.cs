@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.Gms.Location;
@@ -16,7 +16,7 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
 {
     public class LocationCallbacker : LocationCallback
     {
-        public EventHandler<OnLocationCapturedEventArgs> MyLocation;
+        public EventHandler<OnLocationCapturedEventArgs> MyLocationHandler;
         public class OnLocationCapturedEventArgs : EventArgs
         {
             public Android.Locations.Location Location { get; set; }
@@ -30,7 +30,7 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
         {
             if(result.Locations.Count != 0)
             {
-                MyLocation?.Invoke(this, new OnLocationCapturedEventArgs { Location = result.Locations[0] });
+                MyLocationHandler?.Invoke(this, new OnLocationCapturedEventArgs { Location = result.Locations[0] });
             }
         }
     }

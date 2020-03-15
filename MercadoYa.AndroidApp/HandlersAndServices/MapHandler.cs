@@ -12,6 +12,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using MercadoYa.AndroidApp.Fragments;
 using MercadoYa.AndroidApp.Model;
 using MercadoYa.Model.Concrete;
 using Newtonsoft.Json;
@@ -27,20 +28,16 @@ namespace MercadoYa.AndroidApp.Handlers_nd_Helpers
         public List<Marker> MappedMarkers { get; } = new List<Marker>();
 
         EssentialsLocation CachedUserLocation;
+        public MapHandler(string MapsApiKey, GoogleMap Map, EventHandler<GoogleMap.MarkerClickEventArgs> OnMarkerClickAction)
+        {
+            this.MapKey = MapsApiKey;
+            this.Map = Map;
+            Map.MarkerClick += OnMarkerClickAction;
+        }
         public MapHandler(string MapsApiKey, GoogleMap Map)
         {
             this.MapKey = MapsApiKey;
             this.Map = Map;
-            Map.MarkerClick += Map_MarkerClick;
-        }
-
-        //@ToDo: handle maponclick.
-        private void Map_MarkerClick(object sender, GoogleMap.MarkerClickEventArgs e)
-        {
-            var Store = (e.Marker.Tag as JavaObjectWrapper<object>).Obj as StoreUser;
-            if (Store is null)
-                return;
-            //Show store details.
         }
 
 
