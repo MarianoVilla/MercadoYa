@@ -3,6 +3,7 @@ using GeneralUtil.Model;
 using MercadoYa.Da.MySql.QueryEngine;
 using MercadoYa.Interfaces;
 using MercadoYa.Model.Concrete;
+using MercadoYa.Model.CustomDataStructures;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -66,7 +67,8 @@ namespace MercadoYa.Da.MySql
             var Parameters = new DynamicParameters();
             Parameters.AddByReflection(Request);
 
-            var Result = conn.Query<dynamic>(Const.SpGetNearbyStores, Parameters, commandType: CommandType.StoredProcedure).Select(x => new StoreUser()
+            var Result = conn.Query<dynamic>(Const.SpGetNearbyStores, Parameters, commandType: CommandType.StoredProcedure)
+                .Select(x => new StoreUser()
             {
                 Uid = x.Uid,
                 Direction = x.Direction,
@@ -79,7 +81,17 @@ namespace MercadoYa.Da.MySql
                 RatingScore = x.RatingScore,
                 Description = x.Description,
                 Lore = x.Lore,
-                OpenIntervals = new List<Interval<DateTime>>() { new Interval<DateTime>(new DateTime(x.OpensAt?.Ticks ?? 0), new DateTime(x.ClosesAt?.Ticks ?? 0)) }
+                Schedule = new StoreDaySchedule()
+                {
+                    DailyIntervals = new List<DaySchedule>()
+                    {
+                         new DaySchedule() { OpenIntervals = new Interval<DateTime>(new DateTime(x.OpensAt?.Ticks ?? 0), new DateTime(x.ClosesAt?.Ticks ?? 0)),
+                         Day = DateTime.Now.DayOfWeek
+                    }
+                },
+                    MightExtendIf = x.MightExtendIf,
+                    MightShrinkIf = x.MightShrinkIf
+                }
             }).ToList();
             return Result;
         }

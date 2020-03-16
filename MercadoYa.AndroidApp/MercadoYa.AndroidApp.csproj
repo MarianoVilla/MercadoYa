@@ -376,6 +376,7 @@
   <ItemGroup>
     <AndroidResource Include="Resources\layout\store_details_fragment.xml">
       <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
     </AndroidResource>
   </ItemGroup>
   <ItemGroup>

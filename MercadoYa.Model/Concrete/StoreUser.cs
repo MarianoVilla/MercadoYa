@@ -21,7 +21,7 @@ namespace MercadoYa.Model.Concrete
         public int RatingScore { get; set; }
         public string Description { get; set; }
         public string Lore { get; set; }
-        public IEnumerable<Interval<DateTime>> OpenIntervals { get; set; }
+        public StoreDaySchedule Schedule { get; set; }
         public IEnumerable<ITag> Tags { get; set; }
         public IEnumerable<Food> Foods { get; set; }
     }

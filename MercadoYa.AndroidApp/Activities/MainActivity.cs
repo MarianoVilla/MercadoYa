@@ -266,7 +266,6 @@ namespace MercadoYa.AndroidApp.Activities
             MapsHandler = new MapHandler(MapKey, MainMap);
             CenterOnCurrentLocation(false);
         }
-        //@ToDo: handle maponclick.
         void Map_MarkerClick(object sender, GoogleMap.MarkerClickEventArgs e)
         {
             //@ToDo: extract this expression into a method call that makes it more evident. I find it rather confusing.
@@ -275,11 +274,7 @@ namespace MercadoYa.AndroidApp.Activities
                 return;
             //ToDo: update StoreDetails fragment.
             StoreDetailsCard.Visibility = ViewStates.Visible;
-            //Android.Support.V4.App.Fragment StoreFragment = StoreDetailsFragment.NewInstance(Store);
-            //SupportFragmentManager.BeginTransaction()
-            //                .Add(StoreFragment, Store.Uid)
-            //                .Commit();
-            //Show store details.
+            StoreDetails.Update(Store);
         }
         async void MainMap_CameraIdle(object sender, EventArgs e)
         {
